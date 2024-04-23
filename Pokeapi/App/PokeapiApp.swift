@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct PokeapiApp: App {
+    @StateObject var appNavigation = AppNavigator()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            appNavigation.buildRootScreen()
         }
     }
 }
