@@ -16,9 +16,7 @@ class PokemonCatalogNavigator {
     
     @ViewBuilder
     func start() -> some View {
-        VStack {
-            MenuView_Previews.previews
-        }
+        PokemonCatalogView()
     }
     
 }

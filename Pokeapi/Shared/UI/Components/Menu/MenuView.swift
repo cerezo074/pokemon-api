@@ -11,37 +11,37 @@ import SwiftUI
 struct MenuView: View {
     
     @ObservedObject var viewModel: MainMenuViewModel
- 
+    
     var body: some View {
         //TODO: Support long list of items with a collection or a scrollview
-            LazyHStack(spacing: 0) {
-                    ForEach(viewModel.items) { item in
-                        
-                        if viewModel.isNeededLeftSpace(for: item) {
-                            Spacer()
-                        }
-                        
-                        Button(action: {
-                        }, label: {
-                            VStack(spacing: 10) {
-                                Image(systemName: item.icon)
-                                Text(item.name)
-                                    .font(.caption)
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .foregroundColor(item.isActive ?
-                                             DesingSystem.Button.Color.activeColor : DesingSystem.Button.Color.inActiveColor)
-                        })
-                        .buttonStyle(.borderedProminent)
-                        .tint(.clear)
-                       
-                        if viewModel.isNeededRightSpace(for: item) {
-                            Spacer()
-                        }
+        LazyHStack(spacing: 0) {
+            ForEach(viewModel.items) { item in
+                
+                if viewModel.isNeededLeftSpace(for: item) {
+                    Spacer()
+                }
+                
+                Button(action: {
+                    viewModel.select(item)
+                }, label: {
+                    VStack(spacing: 10) {
+                        Image(systemName: item.icon)
+                        Text(item.name)
+                            .font(.caption)
+                            .frame(maxWidth: .infinity)
                     }
+                    .foregroundColor(item.isActive ?
+                                     DesingSystem.Button.Color.activeColor : DesingSystem.Button.Color.inActiveColor)
+                })
+                .buttonStyle(.borderedProminent)
+                .tint(.clear)
+                
+                if viewModel.isNeededRightSpace(for: item) {
+                    Spacer()
+                }
             }
         }
-
+    }
 }
 
 struct MenuView_Previews: PreviewProvider {
