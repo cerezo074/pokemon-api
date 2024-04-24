@@ -11,30 +11,6 @@ import Combine
 
 class AppNavigator: ObservableObject {
     
-    private lazy var catalogNavigator: PokemonCatalogNavigator = {
-        let navigator = PokemonCatalogNavigator()
-        
-        return navigator
-    }()
-    
-    private lazy var comparatorNavigator: PokemonComparatorNavigator = {
-        let navigator = PokemonComparatorNavigator()
-        
-        return navigator
-    }()
-    
-    private lazy var quizNavigator: PokemonQuizNavigator = {
-        let navigator = PokemonQuizNavigator()
-        
-        return navigator
-    }()
-    
-    private lazy var favoritesNavigator: PokemonFavoritesNavigator = {
-        let navigator = PokemonFavoritesNavigator()
-        
-        return navigator
-    }()
-    
     @Published
     private var menuViewModel: MainMenuViewModel
     
@@ -79,13 +55,17 @@ class AppNavigator: ObservableObject {
         if let choice = menuViewModel.selectedMenuItemType {
             switch choice {
             case .home:
-                catalogNavigator.start()
+                let navigator = PokemonCatalogNavigator(screen: .list)
+                navigator.start()
             case .comparator:
-                comparatorNavigator.start()
+                let navigator = PokemonComparatorNavigator()
+                navigator.start()
             case .quiz:
-                quizNavigator.start()
+                let navigator = PokemonQuizNavigator()
+                navigator.start()
             case .favorites:
-                favoritesNavigator.start()
+                let navigator = PokemonFavoritesNavigator()
+                navigator.start()
             }
         } else {
             Text("Error, view can't be build :(. Review your code")
