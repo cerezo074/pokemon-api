@@ -34,7 +34,8 @@ class PokemonCatalogNavigator {
     private func makeScreen() -> some View {
         switch screen {
         case .list:
-            PokemonCatalogView(navigator: self)
+            let viewModel = PokemonCatalogViewModel()
+            PokemonCatalogView(viewModel: viewModel, navigator: self)
         case .detail(let pokemonName):
             PokemonDetailView(pokemonName: pokemonName)
         }
