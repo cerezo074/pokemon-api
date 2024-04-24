@@ -52,14 +52,26 @@ class AppNavigator: ObservableObject {
         
     @ViewBuilder
     func buildRootScreen() -> some View {
-        NavigationView(content: {
-            VStack {
-                Spacer()
-                buildViewForSelectedMenuItemType()
-                Spacer()
-                MenuView(viewModel: menuViewModel).frame(height: 60)
+        if #available(iOS 16.0, *) {
+            NavigationStack {
+                buildScreenForSelectedMenuItem()
             }
-        })
+        } else {
+            NavigationView(content: {
+                buildScreenForSelectedMenuItem()
+            })
+        }
+    }
+    
+    @ViewBuilder
+    private func buildScreenForSelectedMenuItem() -> some View {
+        VStack {
+            Spacer()
+            buildViewForSelectedMenuItemType()
+            Spacer()
+            Divider()
+            MenuView(viewModel: menuViewModel).frame(height: 60)
+        }
     }
     
     @ViewBuilder
@@ -85,7 +97,7 @@ class AppNavigator: ObservableObject {
 extension AppNavigator: MainMenuActionHandler {
     
     func didSelect(item: MainMenuItem) {
-        
+        print("Selected menu option: \(item)")
     }
     
 }
