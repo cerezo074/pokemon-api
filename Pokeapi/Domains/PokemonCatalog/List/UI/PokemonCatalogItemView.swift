@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Kingfisher
 
 struct PokemonCatalogItemView: View {
     
@@ -33,14 +34,16 @@ struct PokemonCatalogItemView: View {
                 }
                 Spacer()
                 if let pokemonImageURL = item.pokemonImageURL {
-                    Rectangle()
-                        .foregroundStyle(.gray)
-                        .aspectRatio(contentMode: .fill)
+                    KFImage(pokemonImageURL).placeholder {
+                        Image("pokemon_thumbnail_placehoder")
+                            .resizable()
+                            .scaledToFit()
+                    }
                 }
             }
         }
         .padding(EdgeInsets(top: 14, leading: 14, bottom: 14, trailing: 14))
-        .background(Color.teal)
+        .background(Color.yellow)
         .clipShape(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
         )

@@ -18,6 +18,7 @@
 		4594A6012BD86AA8009C8182 /* PokemonComparatorNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4594A6002BD86AA8009C8182 /* PokemonComparatorNavigator.swift */; };
 		4594A6042BD86B18009C8182 /* PokemonQuizNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4594A6032BD86B18009C8182 /* PokemonQuizNavigator.swift */; };
 		4594A6072BD86B85009C8182 /* PokemonFavoritesNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4594A6062BD86B85009C8182 /* PokemonFavoritesNavigator.swift */; };
+		45A5C5422BDB07A600B4AB4B /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 45A5C5412BDB07A600B4AB4B /* Kingfisher */; };
 		45E9ABA52BD7F6270049BE69 /* PokeapiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E9ABA42BD7F6270049BE69 /* PokeapiApp.swift */; };
 		45E9ABA72BD7F6270049BE69 /* PokemonCatalogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E9ABA62BD7F6270049BE69 /* PokemonCatalogView.swift */; };
 		45E9ABA92BD7F62A0049BE69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45E9ABA82BD7F62A0049BE69 /* Assets.xcassets */; };
@@ -85,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45A5C5422BDB07A600B4AB4B /* Kingfisher in Frameworks */,
 				45E9ABD02BD809A80049BE69 /* PokemonAPI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -333,6 +335,7 @@
 			name = Pokeapi;
 			packageProductDependencies = (
 				45E9ABCF2BD809A80049BE69 /* PokemonAPI */,
+				45A5C5412BDB07A600B4AB4B /* Kingfisher */,
 			);
 			productName = Pokeapi;
 			productReference = 45E9ABA12BD7F6270049BE69 /* Pokeapi.app */;
@@ -408,6 +411,7 @@
 			mainGroup = 45E9AB982BD7F6270049BE69;
 			packageReferences = (
 				45E9ABCE2BD809A80049BE69 /* XCRemoteSwiftPackageReference "PokemonAPI" */,
+				45A5C5402BDB07A600B4AB4B /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 45E9ABA22BD7F6270049BE69 /* Products */;
 			projectDirPath = "";
@@ -796,6 +800,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		45A5C5402BDB07A600B4AB4B /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.11.0;
+			};
+		};
 		45E9ABCE2BD809A80049BE69 /* XCRemoteSwiftPackageReference "PokemonAPI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kinkofer/PokemonAPI";
@@ -807,6 +819,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		45A5C5412BDB07A600B4AB4B /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45A5C5402BDB07A600B4AB4B /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
 		45E9ABCF2BD809A80049BE69 /* PokemonAPI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 45E9ABCE2BD809A80049BE69 /* XCRemoteSwiftPackageReference "PokemonAPI" */;
