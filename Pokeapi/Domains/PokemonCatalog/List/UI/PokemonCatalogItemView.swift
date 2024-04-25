@@ -11,48 +11,90 @@ import Kingfisher
 
 struct PokemonCatalogItemView: View {
     
-    let item: PokemonCatalogItemViewModel
+    let viewModel: PokemonCatalogItemViewModel
     
     var body: some View {
         VStack {
             HStack {
-                Text(item.name).font(.footnote)
+                Text(viewModel.name).font(.footnote)
                 Spacer()
-                Text(item.id).font(.footnote)
+                Text(viewModel.id).font(.footnote)
             }
             HStack {
-                if item.types.count > 0 {
+                if viewModel.types.count > 0 {
                     VStack(spacing: 8) {
-                        if let firstType = item.types.first {
+                        if let firstType = viewModel.types.first {
                             Text(firstType).font(.footnote)
                         }
                         
-                        if let secondType = item.secondType {
+                        if let secondType = viewModel.secondType {
                             Text(secondType).font(.footnote)
                         }
                     }
                 }
                 Spacer()
-                if let pokemonImageURL = item.pokemonImageURL {
-                    KFImage(pokemonImageURL).placeholder {
-                        Image("pokemon_thumbnail_placehoder")
-                            .resizable()
-                            .scaledToFit()
-                    }
-                }
+                getPokemonImage()
             }
         }
         .padding(EdgeInsets(top: 14, leading: 14, bottom: 14, trailing: 14))
-        .background(Color.yellow)
+        .background(getBackgroundColor(for: viewModel.style))
         .clipShape(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
         )
     }
 }
 
+private extension PokemonCatalogItemView {
+    
+    @ViewBuilder
+    func getPokemonImage( ) -> some View {
+        if let pokemonImageURL = viewModel.pokemonImageURL {
+            KFImage(pokemonImageURL)
+                .placeholder {
+                    Image("pokemon_placehoder")
+                        .resizable()
+                        .scaledToFill()
+                }
+        } else if viewModel.style == .load {
+            ZStack {
+                Rectangle()
+                    .fill(Color.orange)
+                    .frame(width: 96, height: 96)
+                ProgressView()
+                    .tint(.white)
+            }.onAppear {
+                viewModel.didViewLoadMore()
+            }
+        } else if viewModel.style == .retry {
+            ZStack {
+                Rectangle()
+                    .fill(Color.cyan)
+                    .frame(width: 96, height: 96)
+                Button {
+                    viewModel.didTapRetry()
+                } label: {
+                    Image("pokemon_retry")
+                }
+            }
+        }
+    }
+
+    func getBackgroundColor(for style: PokemonCatalogItemStyle) -> Color {
+        switch style {
+        case .load:
+            return .green
+        case .normal:
+            return .yellow
+        case .retry:
+            return .red
+        }
+    }
+
+}
+
 #Preview {
     PokemonCatalogItemView(
-        item: PokemonCatalogItemViewModel(
+        viewModel: PokemonCatalogItemViewModel(
             name: "Bulbasaur",
             id: "#001",
             types: ["Grass", "Poison"],

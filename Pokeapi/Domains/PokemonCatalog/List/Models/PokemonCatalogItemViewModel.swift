@@ -1,5 +1,5 @@
 //
-//  PokemonCatalogItem.swift
+//  PokemonCatalogItemViewModel.swift
 //  Pokeapi
 //
 //  Created by eli on 24/04/24.
@@ -19,14 +19,17 @@ enum PokemonCatalogItemStyle: Hashable {
 }
 
 struct PokemonCatalogItemViewModel: Hashable, Identifiable {
-    
+    typealias ActionCallback = (PokemonCatalogItemViewModel) -> Void
     typealias ID = String
     let name: String
     let id: String
     let types: [String]
     let pokemonImageURL: URL?
     let backgroundImageURL: URL?
-    let itemStyle: PokemonCatalogItemStyle
+    let style: PokemonCatalogItemStyle
+    
+    var retryTap: ActionCallback? = nil
+    var loadMore: ActionCallback? = nil
     
     var firstType: String? {
         return types.first
@@ -69,7 +72,7 @@ struct PokemonCatalogItemViewModel: Hashable, Identifiable {
             nil
         }
         backgroundImageURL = nil
-        itemStyle = .normal
+        style = .normal
     }
     
     init(
@@ -85,6 +88,30 @@ struct PokemonCatalogItemViewModel: Hashable, Identifiable {
         self.types = types
         self.pokemonImageURL = pokemonImageURL
         self.backgroundImageURL = backgroundImageURL
-        self.itemStyle = itemStyle
+        self.style = itemStyle
+    }
+    
+    func didTapRetry() {
+        guard style == .retry else {
+            return
+        }
+        
+        retryTap?(self)
+    }
+    
+    func didViewLoadMore() {
+        guard style == .load else {
+            return
+        }
+        
+        loadMore?(self)
+    }
+    
+    static func == (lhs: PokemonCatalogItemViewModel, rhs: PokemonCatalogItemViewModel) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }

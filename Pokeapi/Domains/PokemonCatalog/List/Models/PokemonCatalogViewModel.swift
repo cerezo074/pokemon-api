@@ -10,8 +10,29 @@ import Combine
 
 class PokemonCatalogViewModel: ObservableObject {
     
-    private static let pokemonLoaderItemID = "LOADING..."
-    private static let pokemonRetryItemID = "RETRY"
+    private static let retryPokemonID = "RETRY"
+    private static var retryPokemonViewModel: PokemonCatalogItemViewModel {
+        PokemonCatalogItemViewModel.init(
+            name: Self.retryPokemonID,
+            id: Self.retryPokemonID,
+            types: [Self.retryPokemonID, Self.retryPokemonID],
+            pokemonImageURL: nil,
+            backgroundImageURL: nil,
+            itemStyle: .retry
+        )
+    }
+    
+    private static let loadMorePokemonID = "LOADING..."
+    private static var loadMorePokemonViewModel: PokemonCatalogItemViewModel {
+        PokemonCatalogItemViewModel(
+            name: Self.loadMorePokemonID,
+            id: Self.loadMorePokemonID,
+            types: [Self.loadMorePokemonID, Self.loadMorePokemonID],
+            pokemonImageURL: nil,
+            backgroundImageURL: nil,
+            itemStyle: .load
+        )
+    }
  
     @Published
     var pokemonList: [PokemonCatalogItemViewModel]
@@ -38,6 +59,7 @@ class PokemonCatalogViewModel: ObservableObject {
         return "Search a pokémon"
     }
     
+    private var fetchPokemonTask: Task<(), Never>? = nil
     private var didViewLoad: Bool = false
     private var cancellables: Set<AnyCancellable> = []
     private let repository: PokemonRepository
@@ -63,7 +85,7 @@ class PokemonCatalogViewModel: ObservableObject {
     }
     
     private func fetchPokemons() {
-        Task {
+        fetchPokemonTask = Task {
             do {
                 let result = try await repository.loadPokemons()
                 var newPokemons = result.pokemons.sorted(by: <).compactMap {
@@ -71,31 +93,26 @@ class PokemonCatalogViewModel: ObservableObject {
                 }
                 
                 if result.hasMorePokemons {
+                    var fakePokemon = Self.loadMorePokemonViewModel
+                    
+                    fakePokemon.loadMore = { [weak self] item in
+                        self?.handleLoadMore(from: item)
+                    }
+                    
                     newPokemons.append(
-                        PokemonCatalogItemViewModel.init(
-                            name: Self.pokemonLoaderItemID,
-                            id: Self.pokemonLoaderItemID,
-                            types: [Self.pokemonLoaderItemID, Self.pokemonLoaderItemID],
-                            pokemonImageURL: nil,
-                            backgroundImageURL: nil,
-                            itemStyle: .load
-                        )
+                      fakePokemon
                     )
                 }
                 
                 await updatePokemonList(with: newPokemons)
             } catch {
-                let newPokemons = [
-                    PokemonCatalogItemViewModel.init(
-                        name: Self.pokemonRetryItemID,
-                        id: Self.pokemonRetryItemID,
-                        types: [Self.pokemonRetryItemID, Self.pokemonRetryItemID],
-                        pokemonImageURL: nil,
-                        backgroundImageURL: nil,
-                        itemStyle: .retry
-                    )
-                ]
+                var fakePokemon = Self.retryPokemonViewModel
                 
+                fakePokemon.retryTap = { [weak self] item in
+                    self?.handleRetry(from: item)
+                }
+                
+                let newPokemons = [fakePokemon]
                 await updatePokemonList(with: newPokemons)
             }
         }
@@ -105,12 +122,21 @@ class PokemonCatalogViewModel: ObservableObject {
     private func updatePokemonList(with newPokemons: [PokemonCatalogItemViewModel]) {
         var oldPokemonList = pokemonList
         
-        if let lastPokemon = oldPokemonList.last, lastPokemon.itemStyle.isRemovable {
+        if let lastPokemon = oldPokemonList.last, lastPokemon.style.isRemovable {
             oldPokemonList.removeLast()
         }
         
         oldPokemonList.append(contentsOf: newPokemons)
         self.pokemonList = oldPokemonList
         self.isLoadingData = false
+    }
+    
+    private func handleRetry(from viewModel: PokemonCatalogItemViewModel) {
+        print("Retry")
+    }
+    
+    private func handleLoadMore(from viewModel: PokemonCatalogItemViewModel) {
+        fetchPokemonTask?.cancel()
+        fetchPokemons()
     }
 }

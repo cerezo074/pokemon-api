@@ -49,7 +49,7 @@ struct PokemonCatalogView: View {
                     }
                     LazyVGrid(columns: columns, spacing: 20) {
                         ForEach(viewModel.pokemonList) { pokemon in
-                            PokemonCatalogItemView(item: pokemon)
+                            PokemonCatalogItemView(viewModel: pokemon)
                         }
                     }
                 }.padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
