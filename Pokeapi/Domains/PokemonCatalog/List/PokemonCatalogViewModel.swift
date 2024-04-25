@@ -49,7 +49,7 @@ class PokemonCatalogViewModel: ObservableObject {
     ]
     
     @Published
-    var isLoadingData: Bool = false
+    var isLoadingData: Bool = true
     
     @Published
     var searchText: String = ""
@@ -68,6 +68,16 @@ class PokemonCatalogViewModel: ObservableObject {
     
     var searchPlaceholder: String {
         return "Search a pokémon"
+    }
+    
+    private let repository = PokemonRepository(remoteRepository: PokemonRemoteRepository())
+    
+    func viewDidAppear() {
+        repository.loadPokemons()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            self.repository.loadPokemons()
+        }
     }
     
 }

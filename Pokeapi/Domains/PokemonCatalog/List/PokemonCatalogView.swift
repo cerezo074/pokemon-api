@@ -31,7 +31,9 @@ struct PokemonCatalogView: View {
                     Text(viewModel.loaderText)
                 }
                 Spacer()
-            }
+            }.onAppear(perform: {
+                viewModel.viewDidAppear()
+            })
         } else {
             ScrollView(.vertical) {
                 VStack {
