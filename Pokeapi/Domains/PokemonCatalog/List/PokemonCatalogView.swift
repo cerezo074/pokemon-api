@@ -15,36 +15,56 @@ struct PokemonCatalogView: View {
     
     @StateObject
     var viewModel: PokemonCatalogViewModel
+    let navigator: PokemonCatalogNavigator
     @FocusState
     private var inputFocusType: InputType?
-    let navigator: PokemonCatalogNavigator
-        
+    private let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+            
     var body: some View {
-        VStack {
-            Text(viewModel.viewDescription)
-                .font(.headline)
-            CatalogSearchView(
-                text: $viewModel.searchText,
-                placeholder: viewModel.searchPlaceholder
-            )
-            .focused($inputFocusType, equals: .filter)
-            .onSubmit {
+        if viewModel.isLoadingData {
+            VStack {
+                Spacer()
+                ProgressView {
+                    Text(viewModel.loaderText)
+                }
+                Spacer()
+            }
+        } else {
+            ScrollView(.vertical) {
+                VStack {
+                    Text(viewModel.viewDescription)
+                        .font(.headline)
+                    CatalogSearchView(
+                        text: $viewModel.searchText,
+                        placeholder: viewModel.searchPlaceholder
+                    )
+                    .focused($inputFocusType, equals: .filter)
+                    .onSubmit {
+                        inputFocusType = nil
+                    }
+                    LazyVGrid(columns: columns, spacing: 20) {
+                        ForEach(viewModel.pokemonList) { pokemon in
+                            PokemonCatalogItemView(item: pokemon)
+                        }
+                    }
+                }.padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
+            }.toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: {
+                        print("Show filter screen")
+                    }, label: {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                            .tint(DesingSystem.Button.Color.activeColor)
+                    })
+                }
+            }
+            .navigationTitle(viewModel.viewTitle)
+            .onTapGesture {
                 inputFocusType = nil
             }
-            Rectangle().foregroundStyle(.red)
-        }.toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(action: {
-                    print("Show filter screen")
-                }, label: {
-                    Image(systemName: "line.3.horizontal.decrease.circle")
-                        .tint(DesingSystem.Button.Color.activeColor)
-                })
-            }
-        }
-        .navigationTitle(viewModel.viewTitle)
-        .onTapGesture {
-            inputFocusType = nil
         }
     }
 }
@@ -71,9 +91,13 @@ struct PokemonCatalogView: View {
 //                }
 //            }
 
+
+
 #Preview {
-    PokemonCatalogView(
-        viewModel: PokemonCatalogViewModel(),
-        navigator: PokemonCatalogNavigator(screen: .list)
-    )
+    NavigationView {
+        PokemonCatalogView(
+            viewModel: PokemonCatalogViewModel(),
+            navigator: PokemonCatalogNavigator(screen: .list)
+        )
+    }
 }

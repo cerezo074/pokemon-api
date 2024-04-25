@@ -8,24 +8,55 @@
 import Foundation
 import Combine
 
-struct PokemonCatalogItem {
-    let name: String
-    let id: String
-    let types: [String]
-    let pokemonImageURL: URL?
-    let backgroundImageURL: URL?
-}
-
 class PokemonCatalogViewModel: ObservableObject {
  
     @Published
-    var pokemonList: [PokemonCatalogItem] = []
+    var pokemonList: [PokemonCatalogItem] = [
+        PokemonCatalogItem(
+            name: "Bulbasaur",
+            id: "#001",
+            types: ["Grass", "Poison"],
+            pokemonImageURL: URL(string: "http://www.google.com"),
+            backgroundImageURL: nil
+        ),
+        PokemonCatalogItem(
+            name: "Bulbasaur",
+            id: "#002",
+            types: ["Grass", "Poison"],
+            pokemonImageURL: URL(string: "http://www.google.com"),
+            backgroundImageURL: nil
+        ),
+        PokemonCatalogItem(
+            name: "Bulbasaur",
+            id: "#003",
+            types: ["Grass", "Poison"],
+            pokemonImageURL: URL(string: "http://www.google.com"),
+            backgroundImageURL: nil
+        ),
+        PokemonCatalogItem(
+            name: "Bulbasaur",
+            id: "#004",
+            types: ["Grass", "Poison"],
+            pokemonImageURL: URL(string: "http://www.google.com"),
+            backgroundImageURL: nil
+        ),PokemonCatalogItem(
+            name: "Bulbasaur",
+            id: "#005",
+            types: ["Grass", "Poison"],
+            pokemonImageURL: URL(string: "http://www.google.com"),
+            backgroundImageURL: nil
+        )
+    ]
     
     @Published
     var isLoadingData: Bool = false
     
     @Published
     var searchText: String = ""
+    
+    var loaderText: String {
+        return "Loading your pokémons..."
+    }
     
     var viewTitle: String {
         return "Pokédex"

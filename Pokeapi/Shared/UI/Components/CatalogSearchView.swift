@@ -28,3 +28,7 @@ struct CatalogSearchView: View {
     }
     
 }
+
+#Preview {
+    CatalogSearchView(text: Binding.constant(""), placeholder: "placeholder")
+}
