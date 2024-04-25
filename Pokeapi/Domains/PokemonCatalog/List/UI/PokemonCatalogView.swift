@@ -97,9 +97,21 @@ struct PokemonCatalogView: View {
 
 #Preview {
     NavigationView {
+        let pokemonRepository = PokemonRepository(
+            remoteRepository: PokemonRemoteMockDataRepository()
+        )
+        
         PokemonCatalogView(
-            viewModel: PokemonCatalogViewModel(),
+            viewModel: PokemonCatalogViewModel(repository: pokemonRepository),
             navigator: PokemonCatalogNavigator(screen: .list)
         )
     }
+}
+
+class PokemonRemoteMockDataRepository: PokemonRemoteDataServices {
+    
+    func load() async throws -> PokemonFetchDataResult {
+        return .init(pokemons: [], hasMorePokemons: false)
+    }
+    
 }

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct PokemonCatalogItemView: View {
     
-    let item: PokemonCatalogItem
+    let item: PokemonCatalogItemViewModel
     
     var body: some View {
         VStack {
@@ -49,12 +49,13 @@ struct PokemonCatalogItemView: View {
 
 #Preview {
     PokemonCatalogItemView(
-        item: PokemonCatalogItem(
+        item: PokemonCatalogItemViewModel(
             name: "Bulbasaur",
             id: "#001",
             types: ["Grass", "Poison"],
             pokemonImageURL: URL(string: "http://www.google.com"),
-            backgroundImageURL: nil
+            backgroundImageURL: nil,
+            itemStyle: .normal
         )
     ).frame(width: 150, height: 80)
 }
