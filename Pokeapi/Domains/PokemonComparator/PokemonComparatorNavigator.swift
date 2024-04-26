@@ -12,7 +12,7 @@ class PokemonComparatorNavigator {
     
     @ViewBuilder
     func start() -> some View {
-        Text("Pokemon comparator screen is still under development :(") 
+        Text("Pokemon comparator screen is still under development :(")
             .foregroundStyle(.purple)
     }
     

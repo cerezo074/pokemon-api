@@ -20,9 +20,18 @@ class PokemonCatalogNavigator {
     }
     
     private var screen: Screen
+    private let pokemonRepository: PokemonRepository
     
-    init(screen: Screen) {
+    init(
+        screen: Screen,
+        pokemonRepository: PokemonRepository? = nil
+    ) {
         self.screen = screen
+        self.pokemonRepository = pokemonRepository ??
+        PokemonRepository(
+            remoteRepository: PokemonRemoteRepository(),
+            localRepository: PokemonLocalPersistence()
+        )
     }
     
     @ViewBuilder
@@ -34,7 +43,8 @@ class PokemonCatalogNavigator {
     private func makeScreen() -> some View {
         switch screen {
         case .list:
-            PokemonCatalogView(navigator: self)
+            let viewModel = PokemonCatalogViewModel(repository: pokemonRepository)
+            PokemonCatalogView(viewModel: viewModel, navigator: self)
         case .detail(let pokemonName):
             PokemonDetailView(pokemonName: pokemonName)
         }
