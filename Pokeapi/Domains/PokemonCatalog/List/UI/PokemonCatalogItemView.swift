@@ -18,7 +18,7 @@ struct PokemonCatalogItemView: View {
             HStack {
                 Text(viewModel.name).font(.footnote)
                 Spacer()
-                Text(viewModel.id).font(.footnote)
+                Text(viewModel.formattedID).font(.footnote)
             }
             HStack {
                 if viewModel.types.count > 0 {
@@ -96,7 +96,8 @@ private extension PokemonCatalogItemView {
     PokemonCatalogItemView(
         viewModel: PokemonCatalogItemViewModel(
             name: "Bulbasaur",
-            id: "#001",
+            id: 1,
+            formattedID: "#001",
             types: ["Grass", "Poison"],
             pokemonImageURL: URL(string: "http://www.google.com"),
             backgroundImageURL: nil,

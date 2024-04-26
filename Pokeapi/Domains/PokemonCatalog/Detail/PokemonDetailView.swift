@@ -10,10 +10,25 @@ import SwiftUI
 
 struct PokemonDetailView: View {
     
-    let pokemonName: String
+    @StateObject
+    var viewModel: PokemonDetailViewModel
     
     var body: some View {
-        Text("A detail screen destinated for a \(pokemonName) info")
+        ScrollView(.vertical) {
+            VStack {
+                if viewModel.isLoadingData {
+                    Spacer()
+                    ProgressView {
+                        Text("Loading...")
+                    }
+                    Spacer()
+                } else {
+                    Text("Pokemon description")
+                }
+            }
+        }.task {
+            await viewModel.loadData()
+        }.navigationTitle(viewModel.pokemonName ?? "")
     }
     
 }

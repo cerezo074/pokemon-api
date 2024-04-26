@@ -20,9 +20,10 @@ enum PokemonCatalogItemStyle: Hashable {
 
 struct PokemonCatalogItemViewModel: Hashable, Identifiable {
     typealias ActionCallback = (PokemonCatalogItemViewModel) -> Void
-    typealias ID = String
+    typealias ID = Int
     let name: String
-    let id: String
+    let id: Int
+    let formattedID: String
     let types: [String]
     let pokemonImageURL: URL?
     let backgroundImageURL: URL?
@@ -62,7 +63,8 @@ struct PokemonCatalogItemViewModel: Hashable, Identifiable {
         }
         
         name = pokemonName
-        id = "#\(pokemonID)"
+        id = pokemonID
+        formattedID = "#\(pokemonID)"
         types = pokemon.types?.compactMap({ value in
             value.type?.name
         }) ?? []
@@ -77,7 +79,8 @@ struct PokemonCatalogItemViewModel: Hashable, Identifiable {
     
     init(
         name: String,
-        id: String,
+        id: Int,
+        formattedID: String,
         types: [String],
         pokemonImageURL: URL?,
         backgroundImageURL: URL?,
@@ -85,6 +88,7 @@ struct PokemonCatalogItemViewModel: Hashable, Identifiable {
     ) {
         self.name = name
         self.id = id
+        self.formattedID = formattedID
         self.types = types
         self.pokemonImageURL = pokemonImageURL
         self.backgroundImageURL = backgroundImageURL

@@ -40,4 +40,8 @@ class PokemonRepository {
         
         return (result.pokemons, result.hasMorePokemons)
     }
+    
+    func getPokemon(at index: Int) async throws -> Chinpokomon {
+        return try await localRepository.getPokemon(at: index)
+    }
 }

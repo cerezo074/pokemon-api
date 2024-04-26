@@ -51,7 +51,7 @@ struct PokemonCatalogView: View {
                     if !viewModel.pokemonViewModelList.isEmpty {
                         LazyVGrid(columns: columns, spacing: 20) {
                             ForEach(viewModel.pokemonViewModelList) { pokemon in
-                                PokemonCatalogItemView(viewModel: pokemon)
+                               makePokemonItemView(for: pokemon)
                             }
                         }
                     } else {
@@ -76,29 +76,30 @@ struct PokemonCatalogView: View {
     }
 }
 
-//            Text("Pokemon catalog screen is still under development :(")
-//                .foregroundStyle(.yellow)
-//            if #available(iOS 16.0, *) {
-//                NavigationLink(
-//                    value: PokemonCatalogNavigator(
-//                        screen: .detail(pokemonName: charmandel)
-//                    )
-//                ) {
-//                    Text("Pokemon: \(charmandel)")
-//                }.navigationDestination(for: PokemonCatalogNavigator.self) { navigator in
-//                    navigator.start()
-//                }
-//            } else {
-//                NavigationLink {
-//                    PokemonCatalogNavigator(
-//                        screen: .detail(pokemonName: charmandel)
-//                    ).start()
-//                } label: {
-//                    Text("Pokemon: \(charmandel)")
-//                }
-//            }
+private extension PokemonCatalogView {
+    
+    func makePokemonItemView(for pokemon: PokemonCatalogItemViewModel) -> some View {
+        navigator.openDetail(for: pokemon.id)
 
-
+        if #available(iOS 16.0, *) {
+            return NavigationLink(
+                value: navigator
+            ) {
+                PokemonCatalogItemView(viewModel: pokemon)
+            }.buttonStyle(PlainButtonStyle())
+            .navigationDestination(for: PokemonCatalogNavigator.self) { navigator in
+                navigator.start()
+            }
+        } else {
+            return NavigationLink {
+                navigator.start()
+            } label: {
+                PokemonCatalogItemView(viewModel: pokemon)
+            }.buttonStyle(PlainButtonStyle())
+        }
+    }
+    
+}
 
 #Preview {
     NavigationView {

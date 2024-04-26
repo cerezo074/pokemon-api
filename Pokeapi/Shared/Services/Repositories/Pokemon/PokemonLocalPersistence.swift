@@ -9,6 +9,7 @@ import Foundation
 import PokemonAPI
 
 protocol PokemonLocalDataServices {
+    func getPokemon(at index: Int) async throws -> Chinpokomon
     func getPokemons() async throws -> [Chinpokomon]
     func getCurrentPaginationObject() async throws -> PKMPagedObject<PKMPokemon>?
     func loadIntialState() async throws -> PokemonRepositoryResult?
@@ -18,8 +19,12 @@ protocol PokemonLocalDataServices {
     ) async throws
 }
 
+enum PokemonLocalDataError: Error {
+    case pokemonNotFound
+}
+
 actor PokemonLocalPersistence: PokemonLocalDataServices {
-        
+    
     private var pokemons: [Chinpokomon]
     private var currentPaginationObject: PKMPagedObject<PKMPokemon>?
     
@@ -64,9 +69,21 @@ actor PokemonLocalPersistence: PokemonLocalDataServices {
             currentPaginationObject: currentPaginationObject
         )
     }
+    
+    func getPokemon(at index: Int) async throws -> Chinpokomon {
+        guard index >= 0, index < pokemons.count else {
+            throw PokemonLocalDataError.pokemonNotFound
+        }
+        
+        return pokemons[index]
+    }
 }
 
 class PokemonLocalMockPersistence: PokemonLocalDataServices {
+    
+    func getPokemon(at index: Int) async throws -> Chinpokomon {
+        throw PokemonLocalDataError.pokemonNotFound
+    }
     
     func getPokemons() async throws -> [Chinpokomon] {
         []

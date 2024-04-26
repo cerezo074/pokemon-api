@@ -16,7 +16,7 @@ class PokemonCatalogNavigator {
     
     enum Screen: Hashable {
         case list
-        case detail(pokemonName: String)
+        case detail(pokemonID: Int)
     }
     
     private var screen: Screen
@@ -39,14 +39,19 @@ class PokemonCatalogNavigator {
         makeScreen()
     }
     
+    func openDetail(for selectedPokemonID: Int) {
+        screen = .detail(pokemonID: selectedPokemonID)
+    }
+
     @ViewBuilder
     private func makeScreen() -> some View {
         switch screen {
         case .list:
             let viewModel = PokemonCatalogViewModel(repository: pokemonRepository)
             PokemonCatalogView(viewModel: viewModel, navigator: self)
-        case .detail(let pokemonName):
-            PokemonDetailView(pokemonName: pokemonName)
+        case .detail(let selectedPokemonID):
+            let viewModel = PokemonDetailViewModel(pokemonID: selectedPokemonID, repository: pokemonRepository)
+            PokemonDetailView(viewModel: viewModel)
         }
     }
 }

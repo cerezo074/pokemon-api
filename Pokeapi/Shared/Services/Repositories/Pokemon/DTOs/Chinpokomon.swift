@@ -8,7 +8,7 @@
 import Foundation
 import PokemonAPI
 
-struct Chinpokomon: Comparable {
+struct Chinpokomon: Comparable, Hashable {
     //TODO: Get rid of this huge entity and use what is really necessary
     let data: PKMPokemon
     let largeImage: URL?
@@ -27,5 +27,9 @@ struct Chinpokomon: Comparable {
     
     static func == (lhs: Chinpokomon, rhs: Chinpokomon) -> Bool {
         lhs.data.id == rhs.data.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(data.id)
     }
 }

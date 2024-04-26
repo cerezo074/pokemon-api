@@ -14,7 +14,8 @@ struct MockObjects {
     static var retryPokemonViewModel: PokemonCatalogItemViewModel {
         PokemonCatalogItemViewModel.init(
             name: Self.retryPokemonID,
-            id: Self.retryPokemonID,
+            id: Int.max,
+            formattedID: Self.retryPokemonID,
             types: [Self.retryPokemonID, Self.retryPokemonID],
             pokemonImageURL: nil,
             backgroundImageURL: nil,
@@ -26,7 +27,8 @@ struct MockObjects {
     static var loadMorePokemonViewModel: PokemonCatalogItemViewModel {
         PokemonCatalogItemViewModel(
             name: Self.loadMorePokemonID,
-            id: Self.loadMorePokemonID,
+            id: Int.max,
+            formattedID: Self.loadMorePokemonID,
             types: [Self.loadMorePokemonID, Self.loadMorePokemonID],
             pokemonImageURL: nil,
             backgroundImageURL: nil,
