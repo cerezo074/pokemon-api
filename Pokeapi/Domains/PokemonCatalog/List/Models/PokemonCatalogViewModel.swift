@@ -85,8 +85,15 @@ class PokemonCatalogViewModel: ObservableObject {
     }
     
     private func fetchPokemons() {
+        guard fetchPokemonTask == nil else {
+            print("Fetching pokemons is on going before... no new task is needed.")
+            return
+        }
+        
         fetchPokemonTask = Task {
             do {
+                try await Task.sleep(nanoseconds: 5_000_000_000)
+
                 let result = try await repository.loadPokemons()
                 var newPokemons = result.pokemons.sorted(by: <).compactMap {
                     PokemonCatalogItemViewModel(chinpokomon: $0)
@@ -105,6 +112,8 @@ class PokemonCatalogViewModel: ObservableObject {
                 }
                 
                 await updatePokemonList(with: newPokemons)
+            } catch is CancellationError {
+                fetchPokemonTask = nil
             } catch {
                 var fakePokemon = Self.retryPokemonViewModel
                 
@@ -129,6 +138,7 @@ class PokemonCatalogViewModel: ObservableObject {
         oldPokemonList.append(contentsOf: newPokemons)
         self.pokemonList = oldPokemonList
         self.isLoadingData = false
+        self.fetchPokemonTask = nil
     }
     
     private func handleRetry(from viewModel: PokemonCatalogItemViewModel) {
@@ -136,7 +146,6 @@ class PokemonCatalogViewModel: ObservableObject {
     }
     
     private func handleLoadMore(from viewModel: PokemonCatalogItemViewModel) {
-        fetchPokemonTask?.cancel()
         fetchPokemons()
     }
 }
