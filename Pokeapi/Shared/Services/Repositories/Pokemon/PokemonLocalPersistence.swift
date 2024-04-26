@@ -30,18 +30,6 @@ actor PokemonLocalPersistence: PokemonLocalDataServices {
     ) {
         self.pokemons = pokemons
         self.currentPaginationObject = currentPaginationObject
-        
-        guard pokemons.isEmpty, currentPaginationObject == nil else {
-            return
-        }
-        
-        Task {
-            do {
-                try await loadIntialState()
-            } catch {
-                print("Can't load initial persisted state due to the following error \(error)")
-            }
-        }
     }
     
     func getPokemons() async throws -> [Chinpokomon] {
