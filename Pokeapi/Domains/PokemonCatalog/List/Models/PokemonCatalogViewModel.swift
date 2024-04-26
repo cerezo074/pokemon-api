@@ -70,13 +70,25 @@ class PokemonCatalogViewModel: ObservableObject {
         isLoadingData = true
     }
     
-    func viewDidAppear() {
+    func viewDidAppear() async {
         guard !didViewLoad else {
             return
         }
+        
         didViewLoad = true
-        isLoadingData = true
+        await MainActor.run {
+            isLoadingData = true
+        }
 
+        do {
+            if let (fetchedPokemons, hasMorePokemons) = try await repository.loadInitialState() {
+                await updateView(with: fetchedPokemons, with: hasMorePokemons)
+                return
+            }
+        } catch {
+            print("Error loading initial state \(error.localizedDescription)")
+        }
+        
         fetchPokemons()
     }
     
@@ -92,26 +104,8 @@ class PokemonCatalogViewModel: ObservableObject {
         
         fetchPokemonTask = Task {
             do {
-                try await Task.sleep(nanoseconds: 5_000_000_000)
-
-                let result = try await repository.loadPokemons()
-                var newPokemons = result.pokemons.sorted(by: <).compactMap {
-                    PokemonCatalogItemViewModel(chinpokomon: $0)
-                }
-                
-                if result.hasMorePokemons {
-                    var fakePokemon = Self.loadMorePokemonViewModel
-                    
-                    fakePokemon.loadMore = { [weak self] item in
-                        self?.handleLoadMore(from: item)
-                    }
-                    
-                    newPokemons.append(
-                      fakePokemon
-                    )
-                }
-                
-                await updatePokemonList(with: newPokemons)
+                let (fetchedPokemons, hasMorePokemons) = try await repository.loadPokemons()
+                await updateView(with: fetchedPokemons, with: hasMorePokemons)
             } catch is CancellationError {
                 fetchPokemonTask = nil
             } catch {
@@ -125,6 +119,26 @@ class PokemonCatalogViewModel: ObservableObject {
                 await updatePokemonList(with: newPokemons)
             }
         }
+    }
+    
+    private func updateView(with fetchedPokemons: [Chinpokomon], with hasMorePokemons: Bool) async {
+        var newPokemons = fetchedPokemons.sorted(by: <).compactMap {
+            PokemonCatalogItemViewModel(chinpokomon: $0)
+        }
+        
+        if hasMorePokemons {
+            var fakePokemon = Self.loadMorePokemonViewModel
+            
+            fakePokemon.loadMore = { [weak self] item in
+                self?.handleLoadMore(from: item)
+            }
+            
+            newPokemons.append(
+              fakePokemon
+            )
+        }
+        
+        await updatePokemonList(with: newPokemons)
     }
     
     @MainActor

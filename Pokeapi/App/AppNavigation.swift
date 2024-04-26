@@ -13,12 +13,20 @@ class AppNavigator: ObservableObject {
     
     @Published
     private var menuViewModel: MainMenuViewModel
-    
     private var subscriptions: Set<AnyCancellable> = []
+    private let pokemonRepository: PokemonRepository
     
-    init(menuViewModel: MainMenuViewModel? = nil) {
+    init(
+        menuViewModel: MainMenuViewModel? = nil,
+        pokemonRepository: PokemonRepository? = nil
+    ) {
         let menuViewModel = MenuView_Previews.defaultMenuView
         self.menuViewModel = menuViewModel
+        self.pokemonRepository = pokemonRepository ?? 
+        PokemonRepository(
+            remoteRepository: PokemonRemoteRepository(),
+            localRepository: PokemonLocalPersistence()
+        )
         menuViewModel.actionHandler = self
         
         menuViewModel.objectWillChange.sink { [weak self] _ in
@@ -55,7 +63,10 @@ class AppNavigator: ObservableObject {
         if let choice = menuViewModel.selectedMenuItemType {
             switch choice {
             case .home:
-                let navigator = PokemonCatalogNavigator(screen: .list)
+                let navigator = PokemonCatalogNavigator(
+                    screen: .list,
+                    pokemonRepository: pokemonRepository
+                )
                 navigator.start()
             case .comparator:
                 let navigator = PokemonComparatorNavigator()

@@ -31,9 +31,9 @@ struct PokemonCatalogView: View {
                     Text(viewModel.loaderText)
                 }
                 Spacer()
-            }.onAppear(perform: {
-                viewModel.viewDidAppear()
-            })
+            }.task {
+                await viewModel.viewDidAppear()
+            }
         } else {
             ScrollView(.vertical) {
                 VStack {
@@ -98,7 +98,8 @@ struct PokemonCatalogView: View {
 #Preview {
     NavigationView {
         let pokemonRepository = PokemonRepository(
-            remoteRepository: PokemonRemoteMockDataRepository()
+            remoteRepository: PokemonRemoteMockRepository(),
+            localRepository: PokemonLocalMockPersistence()
         )
         
         PokemonCatalogView(
@@ -106,12 +107,4 @@ struct PokemonCatalogView: View {
             navigator: PokemonCatalogNavigator(screen: .list)
         )
     }
-}
-
-class PokemonRemoteMockDataRepository: PokemonRemoteDataServices {
-    
-    func load() async throws -> PokemonFetchDataResult {
-        return .init(pokemons: [], hasMorePokemons: false)
-    }
-    
 }

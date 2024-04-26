@@ -22,9 +22,16 @@ class PokemonCatalogNavigator {
     private var screen: Screen
     private let pokemonRepository: PokemonRepository
     
-    init(screen: Screen, pokemonRepository: PokemonRepository? = nil) {
+    init(
+        screen: Screen,
+        pokemonRepository: PokemonRepository? = nil
+    ) {
         self.screen = screen
-        self.pokemonRepository = pokemonRepository ?? PokemonRepository(remoteRepository: PokemonRemoteRepository())
+        self.pokemonRepository = pokemonRepository ??
+        PokemonRepository(
+            remoteRepository: PokemonRemoteRepository(),
+            localRepository: PokemonLocalPersistence()
+        )
     }
     
     @ViewBuilder

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4503EE1F2BDBFB1400D09E55 /* MockObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4503EE1E2BDBFB1400D09E55 /* MockObjects.swift */; };
 		45244DC62BD89C130017EEEA /* PokemonDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45244DC52BD89C130017EEEA /* PokemonDetailView.swift */; };
 		453D84102BD8463300F90F00 /* DesingSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453D840F2BD8463300F90F00 /* DesingSystem.swift */; };
 		455EEF952BD99D800027779E /* PokemonCatalogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455EEF942BD99D800027779E /* PokemonCatalogViewModel.swift */; };
@@ -19,6 +20,9 @@
 		4594A6042BD86B18009C8182 /* PokemonQuizNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4594A6032BD86B18009C8182 /* PokemonQuizNavigator.swift */; };
 		4594A6072BD86B85009C8182 /* PokemonFavoritesNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4594A6062BD86B85009C8182 /* PokemonFavoritesNavigator.swift */; };
 		45A5C5422BDB07A600B4AB4B /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 45A5C5412BDB07A600B4AB4B /* Kingfisher */; };
+		45A5C5452BDB2BA500B4AB4B /* PokemonRemoteRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A5C5442BDB2BA500B4AB4B /* PokemonRemoteRepository.swift */; };
+		45A5C5492BDB2C1700B4AB4B /* Chinpokomon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A5C5482BDB2C1700B4AB4B /* Chinpokomon.swift */; };
+		45A5C54B2BDB2CD700B4AB4B /* PokemonLocalPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A5C54A2BDB2CD700B4AB4B /* PokemonLocalPersistence.swift */; };
 		45E9ABA52BD7F6270049BE69 /* PokeapiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E9ABA42BD7F6270049BE69 /* PokeapiApp.swift */; };
 		45E9ABA72BD7F6270049BE69 /* PokemonCatalogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E9ABA62BD7F6270049BE69 /* PokemonCatalogView.swift */; };
 		45E9ABA92BD7F62A0049BE69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45E9ABA82BD7F62A0049BE69 /* Assets.xcassets */; };
@@ -52,6 +56,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4503EE1E2BDBFB1400D09E55 /* MockObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockObjects.swift; sourceTree = "<group>"; };
 		45244DC52BD89C130017EEEA /* PokemonDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonDetailView.swift; sourceTree = "<group>"; };
 		45244DC72BD8A86C0017EEEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		453D840F2BD8463300F90F00 /* DesingSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesingSystem.swift; sourceTree = "<group>"; };
@@ -64,6 +69,9 @@
 		4594A6002BD86AA8009C8182 /* PokemonComparatorNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonComparatorNavigator.swift; sourceTree = "<group>"; };
 		4594A6032BD86B18009C8182 /* PokemonQuizNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonQuizNavigator.swift; sourceTree = "<group>"; };
 		4594A6062BD86B85009C8182 /* PokemonFavoritesNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonFavoritesNavigator.swift; sourceTree = "<group>"; };
+		45A5C5442BDB2BA500B4AB4B /* PokemonRemoteRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonRemoteRepository.swift; sourceTree = "<group>"; };
+		45A5C5482BDB2C1700B4AB4B /* Chinpokomon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chinpokomon.swift; sourceTree = "<group>"; };
+		45A5C54A2BDB2CD700B4AB4B /* PokemonLocalPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonLocalPersistence.swift; sourceTree = "<group>"; };
 		45E9ABA12BD7F6270049BE69 /* Pokeapi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pokeapi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45E9ABA42BD7F6270049BE69 /* PokeapiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeapiApp.swift; sourceTree = "<group>"; };
 		45E9ABA62BD7F6270049BE69 /* PokemonCatalogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonCatalogView.swift; sourceTree = "<group>"; };
@@ -128,7 +136,7 @@
 		455EEF9C2BDA10F90027779E /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				455EEF9D2BDA11170027779E /* PokemonRepository.swift */,
+				45A5C5432BDB2B8200B4AB4B /* Repositories */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -181,6 +189,34 @@
 				4594A6062BD86B85009C8182 /* PokemonFavoritesNavigator.swift */,
 			);
 			path = PokemonFavorites;
+			sourceTree = "<group>";
+		};
+		45A5C5432BDB2B8200B4AB4B /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				45A5C5472BDB2BF800B4AB4B /* Pokemon */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		45A5C5462BDB2BE200B4AB4B /* DTOs */ = {
+			isa = PBXGroup;
+			children = (
+				45A5C5482BDB2C1700B4AB4B /* Chinpokomon.swift */,
+			);
+			path = DTOs;
+			sourceTree = "<group>";
+		};
+		45A5C5472BDB2BF800B4AB4B /* Pokemon */ = {
+			isa = PBXGroup;
+			children = (
+				45A5C5462BDB2BE200B4AB4B /* DTOs */,
+				455EEF9D2BDA11170027779E /* PokemonRepository.swift */,
+				45A5C5442BDB2BA500B4AB4B /* PokemonRemoteRepository.swift */,
+				45A5C54A2BDB2CD700B4AB4B /* PokemonLocalPersistence.swift */,
+				4503EE1E2BDBFB1400D09E55 /* MockObjects.swift */,
+			);
+			path = Pokemon;
 			sourceTree = "<group>";
 		};
 		45E9AB982BD7F6270049BE69 = {
@@ -457,18 +493,22 @@
 			files = (
 				45244DC62BD89C130017EEEA /* PokemonDetailView.swift in Sources */,
 				455EEF9B2BDA02190027779E /* PokemonCatalogItemView.swift in Sources */,
+				4503EE1F2BDBFB1400D09E55 /* MockObjects.swift in Sources */,
 				4594A5FE2BD8601F009C8182 /* MenuItemType.swift in Sources */,
 				45E9ABD32BD809F60049BE69 /* AppNavigation.swift in Sources */,
 				45E9ABE72BD815080049BE69 /* MainMenuItem.swift in Sources */,
 				455EEF9E2BDA11170027779E /* PokemonRepository.swift in Sources */,
 				45E9ABA72BD7F6270049BE69 /* PokemonCatalogView.swift in Sources */,
+				45A5C54B2BDB2CD700B4AB4B /* PokemonLocalPersistence.swift in Sources */,
 				45E9ABE52BD814F30049BE69 /* MainMenuViewModel.swift in Sources */,
 				455EEF992BD9D93B0027779E /* PokemonCatalogItemViewModel.swift in Sources */,
+				45A5C5492BDB2C1700B4AB4B /* Chinpokomon.swift in Sources */,
 				455EEF952BD99D800027779E /* PokemonCatalogViewModel.swift in Sources */,
 				4594A6072BD86B85009C8182 /* PokemonFavoritesNavigator.swift in Sources */,
 				453D84102BD8463300F90F00 /* DesingSystem.swift in Sources */,
 				4594A6012BD86AA8009C8182 /* PokemonComparatorNavigator.swift in Sources */,
 				455EEF972BD9D0960027779E /* CatalogSearchView.swift in Sources */,
+				45A5C5452BDB2BA500B4AB4B /* PokemonRemoteRepository.swift in Sources */,
 				4594A6042BD86B18009C8182 /* PokemonQuizNavigator.swift in Sources */,
 				45E9ABA52BD7F6270049BE69 /* PokeapiApp.swift in Sources */,
 				45E9ABE22BD80F880049BE69 /* MenuView.swift in Sources */,

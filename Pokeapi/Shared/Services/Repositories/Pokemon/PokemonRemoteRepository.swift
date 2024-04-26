@@ -1,35 +1,23 @@
 //
-//  PokemonRepository.swift
+//  PokemonRemoteRepository.swift
 //  Pokeapi
 //
-//  Created by eli on 24/04/24.
+//  Created by eli on 25/04/24.
 //
 
 import Foundation
-import Combine
 import PokemonAPI
 
-class PokemonRepository {
-    
-    private let pokemonRemoteRepository: PokemonRemoteDataServices
-    
-    init(remoteRepository: PokemonRemoteDataServices) {
-        self.pokemonRemoteRepository = remoteRepository
-    }
-    
-    func loadPokemons() async throws -> PokemonFetchDataResult {
-        //TODO: Use local persistence to save the data from the last result before returning it
-        return try await pokemonRemoteRepository.load()
-    }
-}
-
 protocol PokemonRemoteDataServices {
-    func load() async throws -> PokemonFetchDataResult
+    func load(
+        with currentPaginationObject: PKMPagedObject<PKMPokemon>?
+    ) async throws -> PokemonRepositoryResult
 }
 
-struct PokemonFetchDataResult {
+struct PokemonRepositoryResult {
     let pokemons: [Chinpokomon]
     let hasMorePokemons: Bool
+    var currentPaginationObject: PKMPagedObject<PKMPokemon>
 }
 
 class PokemonRemoteRepository: PokemonRemoteDataServices {
@@ -42,34 +30,34 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
     private let pokemonsPerRequest: Int
     private var currentPaginationObject: PKMPagedObject<PKMPokemon>?
     
-    private var currentPaginationState: PaginationState<PKMPokemon>? {
-        guard let currentPaginationObject else { return .initial(pageLimit: pokemonsPerRequest) }
-        guard currentPaginationObject.hasNext else { return nil }
-        
-        return .continuing(currentPaginationObject, .next)
-    }
-    
     init(pokemonsPerRequest: Int = 20) {
         self.pokemonsPerRequest = pokemonsPerRequest
     }
     
-    func load() async throws -> PokemonFetchDataResult {
-        guard let currentPaginationState else {
-            return PokemonFetchDataResult(pokemons: [], hasMorePokemons: false)
-        }
+    func load(
+        with currentPaginationObject: PKMPagedObject<PKMPokemon>?
+    ) async throws -> PokemonRepositoryResult {
+        let currentPaginationState = getCurrentPaginationState(from: currentPaginationObject)
         
         let result = try await PokemonAPI().pokemonService.fetchPokemonList(
             paginationState: currentPaginationState
         )
         
         guard let pokemonResults = result.results as? [PKMNamedAPIResource<PKMPokemon>] else {
-            return PokemonFetchDataResult(pokemons: [], hasMorePokemons: result.hasNext)
+            return PokemonRepositoryResult(
+                pokemons: [],
+                hasMorePokemons: result.hasNext,
+                currentPaginationObject: result
+            )
         }
         
         let pokemons = try await PokemonRemoteRepository.getPokemons(with: pokemonResults)
-        currentPaginationObject = result
         
-        return PokemonFetchDataResult(pokemons: pokemons, hasMorePokemons: result.hasNext)
+        return PokemonRepositoryResult(
+            pokemons: pokemons,
+            hasMorePokemons: result.hasNext,
+            currentPaginationObject: result
+        )
     }
     
     private static func getPokemons(
@@ -119,30 +107,38 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
         return Chinpokomon(data: downloadedPokemon, largeImage: pokemonLargeImage)
     }
     
+    private func getCurrentPaginationState(
+        from paginationObject: PKMPagedObject<PKMPokemon>? = nil
+    ) -> PaginationState<PKMPokemon> {
+        guard let paginationObject else {
+            return .initial(pageLimit: pokemonsPerRequest)
+        }
+        
+        guard paginationObject.hasNext else {
+            return .continuing(paginationObject, .last)
+        }
+        
+        return .continuing(paginationObject, .next)
+    }
+    
     private static func makeLargeImageURL(for id: Int) -> URL? {
         return URL.init(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(id).png")
     }
-    
 }
 
-struct Chinpokomon: Comparable {
-    //TODO: Get rid of this huge entity and use what is really necessary
-    let data: PKMPokemon
-    let largeImage: URL?
+/**
+ Class used from swiftui previews or unit tests
+ */
+class PokemonRemoteMockRepository: PokemonRemoteDataServices {
     
-    var pokemonThumbnailImageURL: URL? {
-        guard let frontDefaultImage = data.sprites?.frontDefault else {
-            return nil
-        }
-        
-        return URL.init(string: frontDefaultImage)
+    func load(
+        with currentPaginationObject: PKMPagedObject<PKMPokemon>?
+    ) async throws -> PokemonRepositoryResult {
+        return .init(
+            pokemons: [],
+            hasMorePokemons: false,
+            currentPaginationObject: PKMPagedObject<PKMPokemon>.makePagination()
+        )
     }
-    
-    static func < (lhs: Chinpokomon, rhs: Chinpokomon) -> Bool {
-        (lhs.data.id ?? -1) < (rhs.data.id ?? -1)
-    }
-    
-    static func == (lhs: Chinpokomon, rhs: Chinpokomon) -> Bool {
-        lhs.data.id == rhs.data.id
-    }
+
 }
