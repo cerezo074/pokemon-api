@@ -24,7 +24,7 @@ struct PokemonCatalogView: View {
     ]
             
     var body: some View {
-        if viewModel.isLoadingData {
+        if viewModel.isLoadingDataAtFirstTime {
             VStack {
                 Spacer()
                 ProgressView {
@@ -41,16 +41,21 @@ struct PokemonCatalogView: View {
                         .font(.headline)
                     CatalogSearchView(
                         text: $viewModel.searchText,
+                        isSearching: viewModel.isSearchingPokemons,
                         placeholder: viewModel.searchPlaceholder
                     )
                     .focused($inputFocusType, equals: .filter)
                     .onSubmit {
                         inputFocusType = nil
                     }
-                    LazyVGrid(columns: columns, spacing: 20) {
-                        ForEach(viewModel.pokemonList) { pokemon in
-                            PokemonCatalogItemView(viewModel: pokemon)
+                    if !viewModel.pokemonViewModelList.isEmpty {
+                        LazyVGrid(columns: columns, spacing: 20) {
+                            ForEach(viewModel.pokemonViewModelList) { pokemon in
+                                PokemonCatalogItemView(viewModel: pokemon)
+                            }
                         }
+                    } else {
+                        Text(viewModel.emptyListResult)
                     }
                 }.padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
             }.toolbar {

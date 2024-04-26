@@ -9,65 +9,46 @@ import Foundation
 import Combine
 
 class PokemonCatalogViewModel: ObservableObject {
-    
-    private static let retryPokemonID = "RETRY"
-    private static var retryPokemonViewModel: PokemonCatalogItemViewModel {
-        PokemonCatalogItemViewModel.init(
-            name: Self.retryPokemonID,
-            id: Self.retryPokemonID,
-            types: [Self.retryPokemonID, Self.retryPokemonID],
-            pokemonImageURL: nil,
-            backgroundImageURL: nil,
-            itemStyle: .retry
-        )
-    }
-    
-    private static let loadMorePokemonID = "LOADING..."
-    private static var loadMorePokemonViewModel: PokemonCatalogItemViewModel {
-        PokemonCatalogItemViewModel(
-            name: Self.loadMorePokemonID,
-            id: Self.loadMorePokemonID,
-            types: [Self.loadMorePokemonID, Self.loadMorePokemonID],
-            pokemonImageURL: nil,
-            backgroundImageURL: nil,
-            itemStyle: .load
-        )
-    }
  
     @Published
-    var pokemonList: [PokemonCatalogItemViewModel]
+    var pokemonViewModelList: [PokemonCatalogItemViewModel]
     
     @Published
-    var isLoadingData: Bool
+    var isLoadingDataAtFirstTime: Bool
     
     @Published
     var searchText: String = ""
     
-    var loaderText: String {
-        return "Loading your pokémons..."
-    }
+    @Published
+    var isSearchingPokemons: Bool
     
-    var viewTitle: String {
-        return "Pokédex"
-    }
-    
-    var viewDescription: String {
-        return "Use the advanced search to find Pokemon by type, weakness, ability and more!"
-    }
-    
-    var searchPlaceholder: String {
-        return "Search a pokémon"
-    }
-    
+    let loaderText: String = "Loading your pokémons..."
+    let viewTitle: String = "Pokédex"
+    let emptyListResult: String = "We couldn't find pokemons :("
+    let viewDescription: String = "Use the advanced search to find Pokemon by type, weakness, ability and more!"
+    let searchPlaceholder: String = "Search a pokémon"
+    private var pokemonList: [PokemonCatalogItemViewModel] = []
     private var fetchPokemonTask: Task<(), Never>? = nil
     private var didViewLoad: Bool = false
     private var cancellables: Set<AnyCancellable> = []
     private let repository: PokemonRepository
+    private let seachTextUpdateTime: Double = 3
     
     init(repository: PokemonRepository) {
-        self.pokemonList = []
+        self.pokemonViewModelList = []
         self.repository = repository
-        isLoadingData = true
+        isSearchingPokemons = false
+        isLoadingDataAtFirstTime = true
+        
+        $searchText
+            .removeDuplicates()
+            .handleEvents(receiveOutput: { [weak self] _ in
+                self?.isSearchingPokemons = true
+            })
+            .throttle(for: .seconds(seachTextUpdateTime), scheduler: DispatchQueue.global(), latest: true)
+            .sink { [weak self] word in
+                self?.filterPokemons(by: word.lowercased())
+        }.store(in: &cancellables)
     }
     
     func viewDidAppear() async {
@@ -77,7 +58,7 @@ class PokemonCatalogViewModel: ObservableObject {
         
         didViewLoad = true
         await MainActor.run {
-            isLoadingData = true
+            isLoadingDataAtFirstTime = true
         }
 
         do {
@@ -109,7 +90,7 @@ class PokemonCatalogViewModel: ObservableObject {
             } catch is CancellationError {
                 fetchPokemonTask = nil
             } catch {
-                var fakePokemon = Self.retryPokemonViewModel
+                var fakePokemon = MockObjects.retryPokemonViewModel
                 
                 fakePokemon.retryTap = { [weak self] item in
                     self?.handleRetry(from: item)
@@ -125,9 +106,9 @@ class PokemonCatalogViewModel: ObservableObject {
         var newPokemons = fetchedPokemons.sorted(by: <).compactMap {
             PokemonCatalogItemViewModel(chinpokomon: $0)
         }
-        
+                
         if hasMorePokemons {
-            var fakePokemon = Self.loadMorePokemonViewModel
+            var fakePokemon = MockObjects.loadMorePokemonViewModel
             
             fakePokemon.loadMore = { [weak self] item in
                 self?.handleLoadMore(from: item)
@@ -151,7 +132,8 @@ class PokemonCatalogViewModel: ObservableObject {
         
         oldPokemonList.append(contentsOf: newPokemons)
         self.pokemonList = oldPokemonList
-        self.isLoadingData = false
+        self.pokemonViewModelList = pokemonList
+        self.isLoadingDataAtFirstTime = false
         self.fetchPokemonTask = nil
     }
     
@@ -161,5 +143,31 @@ class PokemonCatalogViewModel: ObservableObject {
     
     private func handleLoadMore(from viewModel: PokemonCatalogItemViewModel) {
         fetchPokemons()
+    }
+    
+    private func filterPokemons(by word: String) {
+        let isFilterEnabled = !word.isEmpty
+        let filteredItems: [PokemonCatalogItemViewModel]
+        
+        if (isFilterEnabled) {
+            filteredItems = pokemonList.compactMap { item in
+                //TODO: Improve with a better approach NSPredicate or Regex
+                guard item.style == .normal, item.name.contains(word) else {
+                    return nil
+                }
+                
+                return item
+            }
+            
+        } else {
+            filteredItems = pokemonList
+        }
+        
+        Task {
+            await MainActor.run {
+                isSearchingPokemons = false
+                pokemonViewModelList = filteredItems
+            }
+        }
     }
 }
