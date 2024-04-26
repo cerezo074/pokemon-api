@@ -25,7 +25,6 @@ struct CatalogSearchView: View {
                     .resizable()
                     .frame(width: 24, height: 24)
             }
-
           TextField(placeholder, text: $text)
         }
         .padding()
