@@ -18,7 +18,7 @@ enum PokemonCatalogItemStyle: Hashable {
     }
 }
 
-struct PokemonCatalogItemViewModel: Hashable, Identifiable {
+class PokemonCatalogItemViewModel: Hashable, Identifiable {
     typealias ActionCallback = (PokemonCatalogItemViewModel) -> Void
     typealias ID = Int
     let name: String

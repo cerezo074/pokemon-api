@@ -36,7 +36,7 @@ struct PokemonCatalogView: View {
             }
         } else {
             ScrollView(.vertical) {
-                VStack {
+                let stack = VStack {
                     Text(viewModel.viewDescription)
                         .font(.headline)
                     CatalogSearchView(
@@ -58,6 +58,15 @@ struct PokemonCatalogView: View {
                         Text(viewModel.emptyListResult)
                     }
                 }.padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
+                
+                if #available(iOS 16.0, *) {
+                    stack.navigationDestination(for: PokemonCatalogItemViewModel.self) { pokemon in
+                        let newNavigator = navigator.openDetail(for: pokemon.id)
+                        newNavigator.start()
+                    }
+                }
+                
+                stack
             }.toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
@@ -79,20 +88,16 @@ struct PokemonCatalogView: View {
 private extension PokemonCatalogView {
     
     func makePokemonItemView(for pokemon: PokemonCatalogItemViewModel) -> some View {
-        navigator.openDetail(for: pokemon.id)
-
+        //TODO: Fix wrong destination
         if #available(iOS 16.0, *) {
             return NavigationLink(
-                value: navigator
+                value: pokemon
             ) {
                 PokemonCatalogItemView(viewModel: pokemon)
             }.buttonStyle(PlainButtonStyle())
-            .navigationDestination(for: PokemonCatalogNavigator.self) { navigator in
-                navigator.start()
-            }
         } else {
             return NavigationLink {
-                navigator.start()
+                navigator.openDetail(for: pokemon.id).start()
             } label: {
                 PokemonCatalogItemView(viewModel: pokemon)
             }.buttonStyle(PlainButtonStyle())

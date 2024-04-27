@@ -39,8 +39,10 @@ class PokemonCatalogNavigator {
         makeScreen()
     }
     
-    func openDetail(for selectedPokemonID: Int) {
-        screen = .detail(pokemonID: selectedPokemonID)
+    func openDetail(for selectedPokemonID: Int) -> PokemonCatalogNavigator {
+        let newScreen: Screen = .detail(pokemonID: selectedPokemonID)
+        
+        return PokemonCatalogNavigator(screen: newScreen, pokemonRepository: pokemonRepository)
     }
 
     @ViewBuilder
