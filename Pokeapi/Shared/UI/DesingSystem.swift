@@ -19,4 +19,12 @@ enum DesingSystem {
         
     }
     
+    enum Text {
+        enum Color {
+            static let specs1: SwiftUI.Color = .red
+            static let specs2: SwiftUI.Color = .green
+            static let specs3: SwiftUI.Color = .yellow
+        }
+    }
+    
 }
