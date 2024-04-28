@@ -10,40 +10,28 @@ import Foundation
 class PokemonDetailViewModel: ObservableObject {
     
     var pokemonName: String? {
-        return pokemon?.data.name?.capitalized
+        return pokemon?.name.capitalized
     }
     
     var largeImageURL: URL? {
-        return pokemon?.largeImage
+        return pokemon?.largeImageURL
     }
     
     var pokemonTypes: [String] {
-        guard let types = pokemon?.data.types else {
-            return []
-        }
-        
-        return types.compactMap { $0.type?.name }
+        return pokemon?.types ?? []
     }
     
     var pokemonMoves: [String] {
-        guard let moves = pokemon?.data.moves else {
-            return []
-        }
-        
-        return moves.compactMap { $0.move?.name }
+        return pokemon?.moves ?? []
     }
     
     var pokemonAbilities: [String] {
-        guard let abilities = pokemon?.data.abilities else {
-            return []
-        }
-        
-        return abilities.compactMap { $0.ability?.name }
+        return pokemon?.abilities ?? []
     }
     
     private let pokemonID: Int
     private let pokemonRepository: PokemonRepository
-    private var pokemon: Chinpokomon?
+    private var pokemon: Pokemon?
     
     @Published
     var isLoadingData: Bool

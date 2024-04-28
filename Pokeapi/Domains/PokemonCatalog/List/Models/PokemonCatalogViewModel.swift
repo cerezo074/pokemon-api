@@ -102,9 +102,9 @@ class PokemonCatalogViewModel: ObservableObject {
         }
     }
     
-    private func updateView(with fetchedPokemons: [Chinpokomon], with hasMorePokemons: Bool) async {
+    private func updateView(with fetchedPokemons: [Pokemon], with hasMorePokemons: Bool) async {
         var newPokemons = fetchedPokemons.sorted(by: <).compactMap {
-            PokemonCatalogItemViewModel(chinpokomon: $0)
+            PokemonCatalogItemViewModel(pokemon: $0)
         }
                 
         if hasMorePokemons {

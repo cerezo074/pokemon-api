@@ -21,19 +21,26 @@ class PokemonRepository {
         self.localRepository = localRepository
     }
     
-    func loadPokemons() async throws -> (pokemon: [Chinpokomon], hasMorePokemon: Bool) {
+    func loadPokemons() async throws -> (pokemon: [Pokemon], hasMorePokemon: Bool) {
         let lastPaginationObject = try await localRepository.getCurrentPaginationObject()
         let result = try await remoteRepository.load(with: lastPaginationObject)
-        try await localRepository.saveCurrentPokemons(
-            with: result.pokemons,
-            with: result.currentPaginationObject
-        )
+        
+        Task {
+            do {
+                try await localRepository.saveCurrentPokemons(
+                    with: result.pokemons,
+                    with: result.currentPaginationObject
+                )
+            } catch {
+                print("Can't save downloaded data")
+            }
+        }
         
         return (result.pokemons, result.hasMorePokemons)
     }
     
     // In case there were cached pokemons we are gonna re-use them too.
-    func loadInitialState() async throws -> (pokemon: [Chinpokomon], hasMorePokemon: Bool)? {
+    func loadInitialState() async throws -> (pokemon: [Pokemon], hasMorePokemon: Bool)? {
         guard let result = try await localRepository.loadIntialState() else {
             return nil
         }
@@ -41,7 +48,7 @@ class PokemonRepository {
         return (result.pokemons, result.hasMorePokemons)
     }
     
-    func getPokemon(at index: Int) async throws -> Chinpokomon {
+    func getPokemon(at index: Int) async throws -> Pokemon {
         return try await localRepository.getPokemon(at: index)
     }
 }

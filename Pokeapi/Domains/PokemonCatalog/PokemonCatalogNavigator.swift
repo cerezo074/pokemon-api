@@ -30,7 +30,7 @@ class PokemonCatalogNavigator {
         self.pokemonRepository = pokemonRepository ??
         PokemonRepository(
             remoteRepository: PokemonRemoteRepository(),
-            localRepository: PokemonLocalPersistence()
+            localRepository: PokemonLocalRepository()
         )
     }
     

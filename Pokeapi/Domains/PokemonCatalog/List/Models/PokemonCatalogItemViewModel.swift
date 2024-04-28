@@ -25,8 +25,7 @@ class PokemonCatalogItemViewModel: Hashable, Identifiable {
     let id: Int
     let formattedID: String
     let types: [String]
-    let pokemonImageURL: URL?
-    let backgroundImageURL: URL?
+    let thumbnailImageURL: URL?
     let style: PokemonCatalogItemStyle
     
     var retryTap: ActionCallback? = nil
@@ -54,26 +53,14 @@ class PokemonCatalogItemViewModel: Hashable, Identifiable {
         }
     }
     
-    init?(chinpokomon: Chinpokomon) {
-        let pokemon = chinpokomon.data
+    init(pokemon: Pokemon) {
+        let pokemon = pokemon
         
-        guard let pokemonName = pokemon.name,
-              let pokemonID = pokemon.id else {
-            return nil
-        }
-        
-        name = pokemonName
-        id = pokemonID
-        formattedID = "#\(pokemonID)"
-        types = pokemon.types?.compactMap({ value in
-            value.type?.name
-        }) ?? []
-        pokemonImageURL = if let thumbnailPokemonImage = pokemon.sprites?.frontDefault {
-            URL(string: thumbnailPokemonImage)
-        } else {
-            nil
-        }
-        backgroundImageURL = nil
+        name = pokemon.name
+        id = pokemon.id
+        formattedID = "#\(name)"
+        types = pokemon.types
+        thumbnailImageURL = pokemon.thumbnailImageURL
         style = .normal
     }
     
@@ -90,8 +77,7 @@ class PokemonCatalogItemViewModel: Hashable, Identifiable {
         self.id = id
         self.formattedID = formattedID
         self.types = types
-        self.pokemonImageURL = pokemonImageURL
-        self.backgroundImageURL = backgroundImageURL
+        self.thumbnailImageURL = pokemonImageURL
         self.style = itemStyle
     }
     

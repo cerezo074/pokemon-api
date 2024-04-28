@@ -1,5 +1,5 @@
 //
-//  PokemonLocalPersistence.swift
+//  PokemonLocalRepository.swift
 //  Pokeapi
 //
 //  Created by eli on 25/04/24.
@@ -9,35 +9,35 @@ import Foundation
 import PokemonAPI
 
 protocol PokemonLocalDataServices {
-    func getPokemon(at index: Int) async throws -> Chinpokomon
-    func getPokemons() async throws -> [Chinpokomon]
+    func getPokemon(at index: Int) async throws -> Pokemon
+    func getPokemons() async throws -> [Pokemon]
     func getCurrentPaginationObject() async throws -> PKMPagedObject<PKMPokemon>?
     func loadIntialState() async throws -> PokemonRepositoryResult?
     func saveCurrentPokemons(
-        with newPokemons: [Chinpokomon],
+        with newPokemons: [Pokemon],
         with currentPaginationObject: PKMPagedObject<PKMPokemon>
     ) async throws
 }
 
-enum PokemonLocalDataError: Error {
+enum PokemonLocalRepositoryError: Error {
     case pokemonNotFound
 }
 
-actor PokemonLocalPersistence: PokemonLocalDataServices {
+actor PokemonLocalRepository: PokemonLocalDataServices {
     
-    private var pokemons: [Chinpokomon]
+    private var pokemons: [Pokemon]
     private var currentPaginationObject: PKMPagedObject<PKMPokemon>?
     
     // TODO: Inject persistence mechanism and hold it as an interface (e.g core data, file system)
     init(
-        pokemons: [Chinpokomon] = [],
+        pokemons: [Pokemon] = [],
         currentPaginationObject: PKMPagedObject<PKMPokemon>? = nil
     ) {
         self.pokemons = pokemons
         self.currentPaginationObject = currentPaginationObject
     }
     
-    func getPokemons() async throws -> [Chinpokomon] {
+    func getPokemons() async throws -> [Pokemon] {
         return pokemons
     }
     
@@ -46,7 +46,7 @@ actor PokemonLocalPersistence: PokemonLocalDataServices {
     }
     
     func saveCurrentPokemons(
-        with newPokemons: [Chinpokomon],
+        with newPokemons: [Pokemon],
         with currentPaginationObject: PKMPagedObject<PKMPokemon>
     ) async throws {
         //TODO: Call persistence and save these objects, in case objects can't be persisted extract
@@ -70,9 +70,9 @@ actor PokemonLocalPersistence: PokemonLocalDataServices {
         )
     }
     
-    func getPokemon(at index: Int) async throws -> Chinpokomon {
+    func getPokemon(at index: Int) async throws -> Pokemon {
         guard index >= 0, index < pokemons.count else {
-            throw PokemonLocalDataError.pokemonNotFound
+            throw PokemonLocalRepositoryError.pokemonNotFound
         }
         
         return pokemons[index]
@@ -81,11 +81,11 @@ actor PokemonLocalPersistence: PokemonLocalDataServices {
 
 class PokemonLocalMockPersistence: PokemonLocalDataServices {
     
-    func getPokemon(at index: Int) async throws -> Chinpokomon {
-        throw PokemonLocalDataError.pokemonNotFound
+    func getPokemon(at index: Int) async throws -> Pokemon {
+        throw PokemonLocalRepositoryError.pokemonNotFound
     }
     
-    func getPokemons() async throws -> [Chinpokomon] {
+    func getPokemons() async throws -> [Pokemon] {
         []
     }
     
@@ -94,7 +94,7 @@ class PokemonLocalMockPersistence: PokemonLocalDataServices {
     }
     
     func saveCurrentPokemons(
-        with newPokemons: [Chinpokomon],
+        with newPokemons: [Pokemon],
         with currentPaginationObject: PKMPagedObject<PKMPokemon>
     ) async throws {
         

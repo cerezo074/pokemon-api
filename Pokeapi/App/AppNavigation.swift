@@ -25,7 +25,7 @@ class AppNavigator: ObservableObject {
         self.pokemonRepository = pokemonRepository ?? 
         PokemonRepository(
             remoteRepository: PokemonRemoteRepository(),
-            localRepository: PokemonLocalPersistence()
+            localRepository: PokemonLocalRepository()
         )
         menuViewModel.actionHandler = self
         

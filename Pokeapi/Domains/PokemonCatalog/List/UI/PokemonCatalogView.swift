@@ -87,16 +87,17 @@ struct PokemonCatalogView: View {
 
 private extension PokemonCatalogView {
     
+    @ViewBuilder
     func makePokemonItemView(for pokemon: PokemonCatalogItemViewModel) -> some View {
         //TODO: Fix wrong destination
         if #available(iOS 16.0, *) {
-            return NavigationLink(
+            NavigationLink(
                 value: pokemon
             ) {
                 PokemonCatalogItemView(viewModel: pokemon)
             }.buttonStyle(PlainButtonStyle())
         } else {
-            return NavigationLink {
+            NavigationLink {
                 navigator.openDetail(for: pokemon.id).start()
             } label: {
                 PokemonCatalogItemView(viewModel: pokemon)

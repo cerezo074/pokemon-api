@@ -48,7 +48,7 @@ private extension PokemonCatalogItemView {
     
     @ViewBuilder
     func getPokemonImage( ) -> some View {
-        if let pokemonImageURL = viewModel.pokemonImageURL {
+        if let pokemonImageURL = viewModel.thumbnailImageURL {
             KFImage(pokemonImageURL)
                 .placeholder {
                     Image("pokemon_placehoder")

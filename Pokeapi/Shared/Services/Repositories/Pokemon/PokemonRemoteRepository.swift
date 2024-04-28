@@ -15,7 +15,7 @@ protocol PokemonRemoteDataServices {
 }
 
 struct PokemonRepositoryResult {
-    let pokemons: [Chinpokomon]
+    let pokemons: [Pokemon]
     let hasMorePokemons: Bool
     var currentPaginationObject: PKMPagedObject<PKMPokemon>
 }
@@ -23,7 +23,7 @@ struct PokemonRepositoryResult {
 class PokemonRemoteRepository: PokemonRemoteDataServices {
         
     private enum PokemonListError: Error {
-        case invalidName
+        case invalidData
         case unknowError(pokemonName: String?, reason: String)
     }
     
@@ -62,17 +62,17 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
     
     private static func getPokemons(
         with pokemonResults: [PKMNamedAPIResource<PKMPokemon>]
-    ) async throws -> [Chinpokomon] {
-        return try await withThrowingTaskGroup(of: Result<Chinpokomon, Error>.self) { [] taskGroup in
+    ) async throws -> [Pokemon] {
+        return try await withThrowingTaskGroup(of: Result<Pokemon, Error>.self) { [] taskGroup in
             
             for pokemonResult in pokemonResults {
                 taskGroup.addTask(priority: .background) {
                     do {
-                        if let name = pokemonResult.name {
-                            let downloadedPokemon = try await Self.getPokemon(with: name)
+                        if let name = pokemonResult.name,
+                           let downloadedPokemon = try await Self.getPokemon(with: name) {
                             return Result.success(downloadedPokemon)
                         } else {
-                            return Result.failure(PokemonListError.invalidName)
+                            return Result.failure(PokemonListError.invalidData)
                         }
                     } catch {
                         return Result.failure(
@@ -84,7 +84,7 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
                 }
             }
             
-            return try await taskGroup.reduce(into: [Chinpokomon]()) { partialResult, result in
+            return try await taskGroup.reduce(into: [Pokemon]()) { partialResult, result in
                 switch result {
                 case let .success(pokemon):
                     partialResult.append(pokemon)
@@ -95,16 +95,10 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
         }
     }
     
-    private static func getPokemon(with name: String) async throws -> Chinpokomon {
+    private static func getPokemon(with name: String) async throws -> Pokemon? {
         let downloadedPokemon = try await PokemonAPI().pokemonService.fetchPokemon(name)
-            
-        var pokemonLargeImage: URL? = nil
-        
-        if let pokemonID = downloadedPokemon.id {
-            pokemonLargeImage = makeLargeImageURL(for: pokemonID)
-        }
-        
-        return Chinpokomon(data: downloadedPokemon, largeImage: pokemonLargeImage)
+                
+        return Pokemon(data: downloadedPokemon)
     }
     
     private func getCurrentPaginationState(
@@ -119,10 +113,6 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
         }
         
         return .continuing(paginationObject, .next)
-    }
-    
-    private static func makeLargeImageURL(for id: Int) -> URL? {
-        return URL.init(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(id).png")
     }
 }
 
