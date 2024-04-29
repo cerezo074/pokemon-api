@@ -90,7 +90,7 @@ class PokemonCatalogViewModel: ObservableObject {
             } catch is CancellationError {
                 fetchPokemonTask = nil
             } catch {
-                var fakePokemon = MockObjects.retryPokemonViewModel
+                let fakePokemon = MockObjects.retryPokemonViewModel
                 
                 fakePokemon.retryTap = { [weak self] item in
                     self?.handleRetry(from: item)
@@ -108,7 +108,7 @@ class PokemonCatalogViewModel: ObservableObject {
         }
                 
         if hasMorePokemons {
-            var fakePokemon = MockObjects.loadMorePokemonViewModel
+            let fakePokemon = MockObjects.loadMorePokemonViewModel
             
             fakePokemon.loadMore = { [weak self] item in
                 self?.handleLoadMore(from: item)

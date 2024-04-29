@@ -50,7 +50,18 @@ class PokemonCatalogNavigator {
         switch screen {
         case .list:
             let viewModel = PokemonCatalogViewModel(repository: pokemonRepository)
-            PokemonCatalogView(viewModel: viewModel, navigator: self)
+            
+            if #available(iOS 16.0, *) {
+                PokemonCatalogView(viewModel: viewModel, navigator: self).navigationDestination(
+                    for: PokemonCatalogItemViewModel.self
+                ) { pokemon in
+                    let newNavigator = self.openDetail(for: pokemon.id)
+                    newNavigator.start()
+                }
+            } else {
+                PokemonCatalogView(viewModel: viewModel, navigator: self)
+            }
+            
         case .detail(let selectedPokemonID):
             let viewModel = PokemonDetailViewModel(pokemonID: selectedPokemonID, repository: pokemonRepository)
             PokemonDetailView(viewModel: viewModel)

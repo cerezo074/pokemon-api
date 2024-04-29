@@ -22,7 +22,7 @@ struct PokemonCatalogView: View {
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
-            
+    
     var body: some View {
         if viewModel.isLoadingDataAtFirstTime {
             VStack {
@@ -36,7 +36,7 @@ struct PokemonCatalogView: View {
             }
         } else {
             ScrollView(.vertical) {
-                let stack = VStack {
+                VStack {
                     Text(viewModel.viewDescription)
                         .font(.headline)
                     CatalogSearchView(
@@ -50,23 +50,14 @@ struct PokemonCatalogView: View {
                     }
                     if !viewModel.pokemonViewModelList.isEmpty {
                         LazyVGrid(columns: columns, spacing: 20) {
-                            ForEach(viewModel.pokemonViewModelList) { pokemon in
-                               makePokemonItemView(for: pokemon)
+                            ForEach(viewModel.pokemonViewModelList, id: \.id) { pokemon in
+                                makePokemonItemView(for: pokemon)
                             }
                         }
                     } else {
                         Text(viewModel.emptyListResult)
                     }
                 }.padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
-                
-                if #available(iOS 16.0, *) {
-                    stack.navigationDestination(for: PokemonCatalogItemViewModel.self) { pokemon in
-                        let newNavigator = navigator.openDetail(for: pokemon.id)
-                        newNavigator.start()
-                    }
-                }
-                
-                stack
             }.toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
