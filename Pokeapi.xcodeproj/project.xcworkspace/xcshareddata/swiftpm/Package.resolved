@@ -1,5 +1,5 @@
 {
-  "originHash" : "917a2b512148612347b307b5f8d624e74df48af36fa322c80901a86fc0e1317f",
+  "originHash" : "d48e58ff2c7bc2f2e78c373a146956b3660a44f4a007500007745cb29998ef37",
   "pins" : [
     {
       "identity" : "kingfisher",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "5b92f029fab2cce44386d28588098b5be0824ef5",
         "version" : "7.11.0"
+      }
+    },
+    {
+      "identity" : "pokemonapi",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cerezo074/PokemonAPI",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a5bd7587c29aa371382277e24737d162ae6a84f0"
       }
     }
   ],

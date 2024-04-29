@@ -8,7 +8,7 @@
 import Foundation
 import PokemonAPI
 
-struct PokemonAPIPagination {
+struct PokemonAPIPagination: Codable {
     let count: Int?
     let next: String?
     let previous: String?

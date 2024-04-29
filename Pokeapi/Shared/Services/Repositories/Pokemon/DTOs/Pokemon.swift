@@ -8,7 +8,7 @@
 import Foundation
 import PokemonAPI
 
-struct Pokemon: Comparable, Hashable {
+struct Pokemon: Comparable, Hashable, Codable {
     
     let id: Int
     let name: String

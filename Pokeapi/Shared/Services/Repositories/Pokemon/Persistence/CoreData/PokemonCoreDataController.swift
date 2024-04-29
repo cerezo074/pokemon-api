@@ -8,17 +8,7 @@
 import Foundation
 import CoreData
 
-protocol PokemonLocalDataController {
-    
-}
-
-actor PokemonCoreDataController: PokemonLocalDataController {
-    
-    static let shared = PokemonCoreDataController()
-    
-    private init() {
-        
-    }
+class PokemonCoreDataStack {
     
     // Create a persistent container as a lazy variable to defer instantiation until its first use.
     lazy var persistentContainer: NSPersistentContainer = {
@@ -38,5 +28,5 @@ actor PokemonCoreDataController: PokemonLocalDataController {
         }
         return container
     }()
-        
+    
 }
