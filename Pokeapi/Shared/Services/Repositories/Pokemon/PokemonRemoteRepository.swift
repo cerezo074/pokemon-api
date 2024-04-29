@@ -17,7 +17,7 @@ protocol PokemonRemoteDataServices {
 struct PokemonRepositoryResult {
     let pokemons: [Pokemon]
     let hasMorePokemons: Bool
-    var currentPaginationObject: PKMPagedObject<PKMPokemon>
+    var PKMPagination: PKMPagedObject<PKMPokemon>
 }
 
 class PokemonRemoteRepository: PokemonRemoteDataServices {
@@ -47,7 +47,7 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
             return PokemonRepositoryResult(
                 pokemons: [],
                 hasMorePokemons: result.hasNext,
-                currentPaginationObject: result
+                PKMPagination: result
             )
         }
         
@@ -56,7 +56,7 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
         return PokemonRepositoryResult(
             pokemons: pokemons,
             hasMorePokemons: result.hasNext,
-            currentPaginationObject: result
+            PKMPagination: result
         )
     }
     
@@ -127,7 +127,7 @@ class PokemonRemoteMockRepository: PokemonRemoteDataServices {
         return .init(
             pokemons: [],
             hasMorePokemons: false,
-            currentPaginationObject: PKMPagedObject<PKMPokemon>.makePagination()
+            PKMPagination: PKMPagedObject<PKMPokemon>.makePagination()
         )
     }
 

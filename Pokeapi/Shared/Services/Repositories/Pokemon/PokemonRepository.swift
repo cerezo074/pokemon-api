@@ -29,7 +29,7 @@ class PokemonRepository {
             do {
                 try await localRepository.saveCurrentPokemons(
                     with: result.pokemons,
-                    with: result.currentPaginationObject
+                    with: result.PKMPagination
                 )
             } catch {
                 print("Can't save downloaded data")

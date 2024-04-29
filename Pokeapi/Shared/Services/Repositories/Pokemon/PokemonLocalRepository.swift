@@ -26,15 +26,15 @@ enum PokemonLocalRepositoryError: Error {
 actor PokemonLocalRepository: PokemonLocalDataServices {
     
     private var pokemons: [Pokemon]
-    private var currentPaginationObject: PKMPagedObject<PKMPokemon>?
+    private var currentAPIPagination: PokemonAPIPagination?
     
     // TODO: Inject persistence mechanism and hold it as an interface (e.g core data, file system)
     init(
         pokemons: [Pokemon] = [],
-        currentPaginationObject: PKMPagedObject<PKMPokemon>? = nil
+        currentAPIPagination: PokemonAPIPagination? = nil
     ) {
         self.pokemons = pokemons
-        self.currentPaginationObject = currentPaginationObject
+        self.currentAPIPagination = currentAPIPagination
     }
     
     func getPokemons() async throws -> [Pokemon] {
@@ -42,31 +42,36 @@ actor PokemonLocalRepository: PokemonLocalDataServices {
     }
     
     func getCurrentPaginationObject() async throws -> PKMPagedObject<PKMPokemon>? {
-        return currentPaginationObject
+        return currentAPIPagination?.makePKMPagination()
     }
     
     func saveCurrentPokemons(
         with newPokemons: [Pokemon],
-        with currentPaginationObject: PKMPagedObject<PKMPokemon>
+        with currentPKMPagination: PKMPagedObject<PKMPokemon>
     ) async throws {
         //TODO: Call persistence and save these objects, in case objects can't be persisted extract
         // the relevant data and pass them to a new class. Keep in mind PKMPagedObject and PKMPokemon
         // are encodable objects so serializing them should not be a problem. For now let's use
         // in-memory persistence.
         self.pokemons.append(contentsOf: newPokemons)
-        self.currentPaginationObject = currentPaginationObject
+        self.currentAPIPagination = PokemonAPIPagination(from: currentPKMPagination)
+//        let coredataStack = PokemonCoreDataController.shared
+//        let aaa = await coredataStack.persistentContainer.newBackgroundContext()
+//        print(aaa)
     }
     
     // TODO: Call persistence mechanism to retrived previous data from disk(e.g core data, file system)
     func loadIntialState() async throws -> PokemonRepositoryResult? {
-        guard let currentPaginationObject else {
+        guard let currentAPIPagination else {
             return nil
         }
         
+        let PKMPagination = currentAPIPagination.makePKMPagination()
+        
         return PokemonRepositoryResult(
             pokemons: pokemons,
-            hasMorePokemons: currentPaginationObject.hasNext,
-            currentPaginationObject: currentPaginationObject
+            hasMorePokemons: PKMPagination.hasNext,
+            PKMPagination: PKMPagination
         )
     }
     

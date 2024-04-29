@@ -55,7 +55,7 @@ struct Pokemon: Comparable, Hashable {
         self.largeImageURL = largeImageURL
         self.types = pokemonTypes.compactMap { $0.type?.name }
         self.moves = pokemonMoves.compactMap { $0.move?.name }
-        self.abilities = pokemonMoves.compactMap { $0.move?.name }
+        self.abilities = pokemonAbilities.compactMap { $0.ability?.name }
     }
     
     static func < (lhs: Pokemon, rhs: Pokemon) -> Bool {

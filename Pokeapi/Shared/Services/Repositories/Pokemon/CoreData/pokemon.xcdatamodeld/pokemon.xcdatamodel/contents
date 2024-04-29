@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22757" systemVersion="23E224" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="CDPokemon" representedClassName="CDPokemon" syncable="YES" codeGenerationType="class">
+        <attribute name="abilities" attributeType="Transformable" customClassName="[String]"/>
+        <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="largeImageURL" attributeType="URI"/>
+        <attribute name="moves" attributeType="Transformable" customClassName="[String]"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="thumbnailImageURL" attributeType="URI"/>
+        <attribute name="types" attributeType="Transformable" customClassName="[String]"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+</model>
