@@ -80,19 +80,24 @@ private extension PokemonCatalogView {
     
     @ViewBuilder
     func makePokemonItemView(for pokemon: PokemonCatalogItemViewModel) -> some View {
-        //TODO: Fix wrong destination
-        if #available(iOS 16.0, *) {
-            NavigationLink(
-                value: pokemon
-            ) {
-                PokemonCatalogItemView(viewModel: pokemon)
-            }.buttonStyle(PlainButtonStyle())
+        if pokemon.isAllowedToShowDetail {
+            if #available(iOS 16.0, *) {
+                NavigationLink(
+                    value: pokemon
+                ) {
+                    PokemonCatalogItemView(viewModel: pokemon)
+                }.buttonStyle(PlainButtonStyle())
+            } else {
+                NavigationLink {
+                    navigator.openDetail(for: pokemon.id).start()
+                } label: {
+                    PokemonCatalogItemView(viewModel: pokemon)
+                }.buttonStyle(PlainButtonStyle())
+            }
         } else {
-            NavigationLink {
-                navigator.openDetail(for: pokemon.id).start()
-            } label: {
-                PokemonCatalogItemView(viewModel: pokemon)
-            }.buttonStyle(PlainButtonStyle())
+            PokemonCatalogItemView(viewModel: pokemon).onTapGesture {
+                pokemon.didTap()
+            }
         }
     }
     

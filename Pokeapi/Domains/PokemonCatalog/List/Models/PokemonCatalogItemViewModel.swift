@@ -8,10 +8,10 @@
 import Foundation
 import PokemonAPI
 
-enum PokemonCatalogItemStyle: Hashable {
+enum PokemonCatalogItemStyle: Hashable, Equatable {
     case normal
     case load
-    case retry
+    case retry(stop: Bool)
     
     var isRemovable: Bool {
         return self != .normal
@@ -33,6 +33,10 @@ class PokemonCatalogItemViewModel: Hashable, Identifiable {
     
     var firstType: String? {
         return types.first
+    }
+    
+    var isAllowedToShowDetail: Bool {
+        style == .normal
     }
     
     var showMoreTypeText: String? {
@@ -81,12 +85,12 @@ class PokemonCatalogItemViewModel: Hashable, Identifiable {
         self.style = itemStyle
     }
     
-    func didTapRetry() {
-        guard style == .retry else {
-            return
+    func didTap() {
+        switch style {
+        case .retry:
+            retryTap?(self)
+        default: break
         }
-        
-        retryTap?(self)
     }
     
     func didViewLoadMore() {
@@ -98,10 +102,11 @@ class PokemonCatalogItemViewModel: Hashable, Identifiable {
     }
     
     static func == (lhs: PokemonCatalogItemViewModel, rhs: PokemonCatalogItemViewModel) -> Bool {
-        lhs.id == rhs.id
+        lhs.id == rhs.id && lhs.style == rhs.style
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+        hasher.combine(style)
     }
 }

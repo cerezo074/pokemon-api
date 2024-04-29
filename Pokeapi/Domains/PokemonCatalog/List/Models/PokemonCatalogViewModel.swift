@@ -90,7 +90,7 @@ class PokemonCatalogViewModel: ObservableObject {
             } catch is CancellationError {
                 fetchPokemonTask = nil
             } catch {
-                let fakePokemon = MockObjects.retryPokemonViewModel
+                let fakePokemon = MockObjects.makeRetryPokemonViewModel(hasStopped: true)
                 
                 fakePokemon.retryTap = { [weak self] item in
                     self?.handleRetry(from: item)
@@ -138,7 +138,16 @@ class PokemonCatalogViewModel: ObservableObject {
     }
     
     private func handleRetry(from viewModel: PokemonCatalogItemViewModel) {
-        print("Retry")
+        let index = pokemonList.firstIndex {
+            $0.style == viewModel.style
+        }
+        
+        guard let index else { return }
+        let newViewModel = MockObjects.makeRetryPokemonViewModel(hasStopped: false)
+        
+        pokemonList[index] = newViewModel
+        pokemonViewModelList[index] = newViewModel
+        fetchPokemons()
     }
     
     private func handleLoadMore(from viewModel: PokemonCatalogItemViewModel) {

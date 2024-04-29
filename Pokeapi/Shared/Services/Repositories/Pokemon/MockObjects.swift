@@ -11,7 +11,7 @@ import PokemonAPI
 struct MockObjects {
     
     static let retryPokemonID = "RETRY"
-    static var retryPokemonViewModel: PokemonCatalogItemViewModel {
+    static func makeRetryPokemonViewModel(hasStopped: Bool) -> PokemonCatalogItemViewModel {
         PokemonCatalogItemViewModel.init(
             name: Self.retryPokemonID,
             id: Int.max,
@@ -19,7 +19,7 @@ struct MockObjects {
             types: [Self.retryPokemonID, Self.retryPokemonID],
             pokemonImageURL: nil,
             backgroundImageURL: nil,
-            itemStyle: .retry
+            itemStyle: .retry(stop: hasStopped)
         )
     }
 

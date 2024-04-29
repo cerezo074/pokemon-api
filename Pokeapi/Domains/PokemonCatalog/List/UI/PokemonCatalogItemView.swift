@@ -65,15 +65,15 @@ private extension PokemonCatalogItemView {
             }.onAppear {
                 viewModel.didViewLoadMore()
             }
-        } else if viewModel.style == .retry {
+        } else if case let .retry(stop) = viewModel.style {
             ZStack {
                 Rectangle()
                     .fill(Color.cyan)
                     .frame(width: 96, height: 96)
-                Button {
-                    viewModel.didTapRetry()
-                } label: {
-                    Image("pokemon_retry")
+                Image("pokemon_retry")
+                if !stop {
+                    ProgressView()
+                        .tint(.white)
                 }
             }
         }
