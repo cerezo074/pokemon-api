@@ -106,8 +106,8 @@ private extension PokemonCatalogView {
 #Preview {
     NavigationView {
         let pokemonRepository = PokemonRepository(
-            remoteRepository: PokemonRemoteMockRepository(),
-            localRepository: PokemonLocalMockPersistence()
+            remoteRepository: MockObject.PokemonRemoteRepository(),
+            localRepository: MockObject.PokemonLocalPersistence()
         )
         
         PokemonCatalogView(

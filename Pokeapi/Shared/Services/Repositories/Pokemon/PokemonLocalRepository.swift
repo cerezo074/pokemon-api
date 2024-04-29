@@ -91,29 +91,3 @@ actor PokemonLocalRepository: PokemonLocalDataServices {
         return pokemons[index]
     }
 }
-
-class PokemonLocalMockPersistence: PokemonLocalDataServices {
-    
-    func getPokemon(at index: Int) async throws -> Pokemon {
-        throw PokemonLocalRepositoryError.pokemonNotFound
-    }
-    
-    func getPokemons() async throws -> [Pokemon] {
-        []
-    }
-    
-    func getCurrentPaginationObject() async throws -> PKMPagedObject<PKMPokemon>? {
-        return nil
-    }
-    
-    func saveCurrentPokemons(
-        with newPokemons: [Pokemon],
-        with currentPaginationObject: PKMPagedObject<PKMPokemon>
-    ) async throws {
-        
-    }
-    
-    func loadIntialState() async throws -> PokemonRepositoryResult? {
-        return nil
-    }
-}

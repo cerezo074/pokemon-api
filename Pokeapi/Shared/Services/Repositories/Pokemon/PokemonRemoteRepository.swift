@@ -22,16 +22,18 @@ struct PokemonRepositoryResult {
 
 class PokemonRemoteRepository: PokemonRemoteDataServices {
         
-    private enum PokemonListError: Error {
+    enum PokemonListError: Error {
         case invalidData
         case unknowError(pokemonName: String?, reason: String)
     }
     
+    private let urlSession: URLSession
     private let pokemonsPerRequest: Int
     private var currentPaginationObject: PKMPagedObject<PKMPokemon>?
     
-    init(pokemonsPerRequest: Int = 20) {
+    init(pokemonsPerRequest: Int = 1301, customURLSession: URLSession? = nil) {
         self.pokemonsPerRequest = pokemonsPerRequest
+        self.urlSession = customURLSession ?? URLSession.shared
     }
     
     func load(
@@ -39,9 +41,10 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
     ) async throws -> PokemonRepositoryResult {
         let currentPaginationState = getCurrentPaginationState(from: currentPaginationObject)
         
-        let result = try await PokemonAPI().pokemonService.fetchPokemonList(
-            paginationState: currentPaginationState
-        )
+        let result = try await PokemonAPI(session: urlSession)
+            .pokemonService.fetchPokemonList(
+                paginationState: currentPaginationState
+            )
         
         guard let pokemonResults = result.results as? [PKMNamedAPIResource<PKMPokemon>] else {
             return PokemonRepositoryResult(
@@ -51,7 +54,10 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
             )
         }
         
-        let pokemons = try await PokemonRemoteRepository.getPokemons(with: pokemonResults)
+        let pokemons = try await PokemonRemoteRepository.getPokemons(
+            with: pokemonResults,
+            with: urlSession
+        )
         
         return PokemonRepositoryResult(
             pokemons: pokemons,
@@ -61,7 +67,8 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
     }
     
     private static func getPokemons(
-        with pokemonResults: [PKMNamedAPIResource<PKMPokemon>]
+        with pokemonResults: [PKMNamedAPIResource<PKMPokemon>],
+        with urlSession: URLSession
     ) async throws -> [Pokemon] {
         return try await withThrowingTaskGroup(of: Result<Pokemon, Error>.self) { [] taskGroup in
             
@@ -69,7 +76,10 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
                 taskGroup.addTask(priority: .background) {
                     do {
                         if let name = pokemonResult.name,
-                           let downloadedPokemon = try await Self.getPokemon(with: name) {
+                           let downloadedPokemon = try await Self.getPokemon(
+                            with: name,
+                            with: urlSession
+                           ) {
                             return Result.success(downloadedPokemon)
                         } else {
                             return Result.failure(PokemonListError.invalidData)
@@ -95,8 +105,9 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
         }
     }
     
-    private static func getPokemon(with name: String) async throws -> Pokemon? {
-        let downloadedPokemon = try await PokemonAPI().pokemonService.fetchPokemon(name)
+    private static func getPokemon(with name: String, with urlSession: URLSession) async throws -> Pokemon? {
+        let downloadedPokemon = try await PokemonAPI(session: urlSession)
+            .pokemonService.fetchPokemon(name)
                 
         return Pokemon(data: downloadedPokemon)
     }
@@ -114,21 +125,4 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
         
         return .continuing(paginationObject, .next)
     }
-}
-
-/**
- Class used from swiftui previews or unit tests
- */
-class PokemonRemoteMockRepository: PokemonRemoteDataServices {
-    
-    func load(
-        with currentPaginationObject: PKMPagedObject<PKMPokemon>?
-    ) async throws -> PokemonRepositoryResult {
-        return .init(
-            pokemons: [],
-            hasMorePokemons: false,
-            PKMPagination: PKMPagedObject<PKMPokemon>.makePagination()
-        )
-    }
-
 }
