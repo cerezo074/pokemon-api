@@ -31,7 +31,7 @@ struct MenuView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .foregroundColor(item.isActive ?
-                                     DesingSystem.Button.Color.activeColor : DesingSystem.Button.Color.inActiveColor)
+                                     DesingSystem.Button.Color.menuActiveColor : DesingSystem.Button.Color.menuInActiveColor)
                 })
                 .buttonStyle(.borderedProminent)
                 .tint(.clear)

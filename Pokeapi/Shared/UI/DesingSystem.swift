@@ -13,8 +13,10 @@ enum DesingSystem {
     enum Button {
         
         enum Color {
-            static let activeColor: SwiftUI.Color = .black
-            static let inActiveColor: SwiftUI.Color = .gray
+            static let menuActiveColor: SwiftUI.Color = .black
+            static let menuInActiveColor: SwiftUI.Color = .gray
+            static let navigationActiveColor: SwiftUI.Color = .red
+            static let navigationInActiveColor: SwiftUI.Color = .gray
         }
         
     }

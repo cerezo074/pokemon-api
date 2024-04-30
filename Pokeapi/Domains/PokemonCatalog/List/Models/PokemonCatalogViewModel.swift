@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 class PokemonCatalogViewModel: ObservableObject {
- 
+
     @Published
     var pokemonViewModelList: [PokemonCatalogItemViewModel]
     
@@ -17,10 +17,16 @@ class PokemonCatalogViewModel: ObservableObject {
     var isLoadingDataAtFirstTime: Bool
     
     @Published
-    var searchText: String = ""
+    var searchText: String
     
     @Published
     var isSearchingPokemons: Bool
+    
+    @Published
+    var areFilterActives: Bool
+    
+    typealias ID = UUID
+    let id: UUID = UUID()
     
     let loaderText: String = "Loading your pokémons..."
     let viewTitle: String = "Pokédex"
@@ -37,8 +43,10 @@ class PokemonCatalogViewModel: ObservableObject {
     init(repository: PokemonRepository) {
         self.pokemonViewModelList = []
         self.repository = repository
+        searchText = ""
         isSearchingPokemons = false
         isLoadingDataAtFirstTime = true
+        areFilterActives = false
         
         $searchText
             .removeDuplicates()
@@ -179,4 +187,12 @@ class PokemonCatalogViewModel: ObservableObject {
             }
         }
     }
+}
+
+extension PokemonCatalogViewModel: FilterCatalogObserver {
+    
+    func didChangeFilters(areFilterActives: Bool) {
+        self.areFilterActives = areFilterActives
+    }
+    
 }

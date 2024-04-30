@@ -60,12 +60,16 @@ struct PokemonCatalogView: View {
                 }.padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
             }.toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {
-                        print("Show filter screen")
-                    }, label: {
+                    NavigationLink {
+                        navigator.openFilter(with: self.viewModel).start()
+                    } label: {
                         Image(systemName: "line.3.horizontal.decrease.circle")
-                            .tint(DesingSystem.Button.Color.activeColor)
-                    })
+                            .tint(
+                                viewModel.areFilterActives ?
+                                DesingSystem.Button.Color.navigationActiveColor :
+                                    DesingSystem.Button.Color.navigationInActiveColor
+                            )
+                    }
                 }
             }
             .navigationTitle(viewModel.viewTitle)
