@@ -44,7 +44,7 @@ class PokemonDetailViewModel: ObservableObject {
     
     func loadData() async {
         do {
-            let pokemon = try await pokemonRepository.getPokemon(at: pokemonID)
+            let pokemon = try await pokemonRepository.getPokemon(for: pokemonID)
             self.pokemon = pokemon
             
             await MainActor.run {

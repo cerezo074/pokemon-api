@@ -8,11 +8,7 @@
 import Foundation
 import SwiftUI
 
-protocol PokemonCatalogExternalNavigation {
-    
-}
-
-class PokemonCatalogNavigator {
+struct PokemonCatalogNavigator {
     
     enum Screen: Hashable {
         case list

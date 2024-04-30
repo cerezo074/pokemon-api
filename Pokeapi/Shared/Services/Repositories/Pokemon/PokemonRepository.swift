@@ -39,7 +39,6 @@ class PokemonRepository {
         return (result.pokemons, result.hasMorePokemons)
     }
     
-    // In case there were cached pokemons we are gonna re-use them too.
     func loadInitialState() async throws -> (pokemon: [Pokemon], hasMorePokemon: Bool)? {
         guard let result = try await localRepository.loadIntialState() else {
             return nil
@@ -48,7 +47,7 @@ class PokemonRepository {
         return (result.pokemons, result.hasMorePokemons)
     }
     
-    func getPokemon(at index: Int) async throws -> Pokemon {
-        return try await localRepository.getPokemon(at: index)
+    func getPokemon(for id: Int) async throws -> Pokemon {
+        return try await localRepository.getPokemon(for: id)
     }
 }

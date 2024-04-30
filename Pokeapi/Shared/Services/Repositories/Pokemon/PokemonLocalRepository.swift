@@ -9,7 +9,7 @@ import Foundation
 import PokemonAPI
 
 protocol PokemonLocalDataServices {
-    func getPokemon(at index: Int) async throws -> Pokemon
+    func getPokemon(for id: Int) async throws -> Pokemon
     func getPokemons() async throws -> [Pokemon]
     func getCurrentPaginationObject() async throws -> PKMPagedObject<PKMPokemon>?
     func loadIntialState() async throws -> PokemonRepositoryResult?
@@ -83,11 +83,11 @@ actor PokemonLocalRepository: PokemonLocalDataServices {
         )
     }
     
-    func getPokemon(at index: Int) throws -> Pokemon {
-        guard index >= 0, index < pokemons.count else {
+    func getPokemon(for id: Int) async throws -> Pokemon {
+        guard let foundPokemon = pokemons.first(where: { $0.id == id }) else {
             throw PokemonLocalRepositoryError.pokemonNotFound
         }
         
-        return pokemons[index]
+        return foundPokemon
     }
 }

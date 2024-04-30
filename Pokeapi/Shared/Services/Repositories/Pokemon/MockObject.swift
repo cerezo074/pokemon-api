@@ -600,7 +600,7 @@ extension MockObject {
     
     class PokemonLocalPersistence: PokemonLocalDataServices {
         
-        func getPokemon(at index: Int) async throws -> Pokemon {
+        func getPokemon(for id: Int) async throws -> Pokemon {
             throw PokemonLocalRepositoryError.pokemonNotFound
         }
         
