@@ -31,7 +31,7 @@ class PokemonRemoteRepository: PokemonRemoteDataServices {
     private let pokemonsPerRequest: Int
     private var currentPaginationObject: PKMPagedObject<PKMPokemon>?
     
-    init(pokemonsPerRequest: Int = 1301, customURLSession: URLSession? = nil) {
+    init(pokemonsPerRequest: Int = 20, customURLSession: URLSession? = nil) {
         self.pokemonsPerRequest = pokemonsPerRequest
         self.urlSession = customURLSession ?? URLSession.shared
     }
