@@ -20,7 +20,7 @@ This module shows all the available Pokémon in a two-column grid.
 
 ### Data
 
-Pokémon data was retrieved using the library made by [Kinkofer](https://github.com/kinkofer/PokemonAPI). However, because I wanted to show Pokémon thumbnail images in the list, I needed to call 2 endpoints, not only one. The first one is the list endpoint, which only gives you names and Pokémon URLs. For each list item returned, I called the Pokémon info endpoint, which returns all details about a Pokémon. But that wasn't enough. I've [forked](a5bd7587c29aa371382277e24737d162ae6a84f0) the library and enhanced it by exposing the large Pokémon image (there were only small images) and also opened the pagination model to make it easy to be recreated (I persist this item too, and I want to use Core Data or a query mechanism to improve filter performance).
+Pokémon data was retrieved using the library made by [Kinkofer](https://github.com/kinkofer/PokemonAPI). However, because I wanted to show Pokémon thumbnail images in the list, I needed to call 2 endpoints, not only one. The first one is the list endpoint, which only gives you names and Pokémon URLs. For each list item returned, I called the Pokémon info endpoint, which returns all details about a Pokémon(I used a TaskGroup). But that wasn't enough, I've [forked](a5bd7587c29aa371382277e24737d162ae6a84f0) the library and enhanced it by exposing the large Pokémon image (there were only small images) and also opened the pagination model to make it easy to be recreated (I persist this item too, and I want to use Core Data or a query mechanism to improve filter performance).
 
 Data is being saved locally in the documents folder. For now, the implementation is pretty straightforward and doesn't block the main thread.
 
