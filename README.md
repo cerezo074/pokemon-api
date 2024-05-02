@@ -16,6 +16,8 @@ This module shows all the available Pokémon in a two-column grid.
 - In case the app fails to retrieve the Pokémon, you can interact with a Retry button and initialize the download again.
 - Shows a detail screen for a Pokémon when the user taps on a Pokémon from the list.
 
+  [VIDEO](https://github.com/cerezo074/pokemon-api/assets/6471815/9c49186b-8ce8-488b-a2d5-5deab8dbec1e)
+
 ## Technical Aspects
 
 ### Data
