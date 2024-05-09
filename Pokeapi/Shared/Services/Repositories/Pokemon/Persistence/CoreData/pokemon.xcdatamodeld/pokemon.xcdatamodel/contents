@@ -5,15 +5,20 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="pokemons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDPokemon" inverseName="abilities" inverseEntity="CDPokemon"/>
     </entity>
+    <entity name="CDMove" representedClassName="CDMove" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="pokemons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDPokemon" inverseName="moves" inverseEntity="CDPokemon"/>
+    </entity>
     <entity name="CDPokemon" representedClassName="CDPokemon" syncable="YES" codeGenerationType="class">
-        <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="isFavorite" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="largeImageURL" attributeType="URI"/>
-        <attribute name="moves" attributeType="Transformable" customClassName="[String]"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="thumbnailImageURL" attributeType="URI"/>
         <relationship name="abilities" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDAbility" inverseName="pokemons" inverseEntity="CDAbility"/>
-        <relationship name="types" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDType" inverseName="pokemons" inverseEntity="CDType"/>
+        <relationship name="moves" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDMove" inverseName="pokemons" inverseEntity="CDMove"/>
+        <relationship name="types" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDType" inverseName="pokemons" inverseEntity="CDType"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
@@ -23,6 +28,6 @@
     <entity name="CDType" representedClassName="CDType" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <relationship name="pokemons" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDPokemon" inverseName="types" inverseEntity="CDPokemon"/>
+        <relationship name="pokemons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDPokemon" inverseName="types" inverseEntity="CDPokemon"/>
     </entity>
 </model>

@@ -28,19 +28,20 @@ actor PokemonLocalRepository: PokemonLocalDataServices {
     
     private var pokemons: [Pokemon]
     private var currentAPIPagination: PokemonAPIPagination?
-    private let filePersistence: FilePersistenceServices
-    private let coreDataStack: PokemonCoreDataStack
+    private let filePersistenceProvider: FilePersistenceServices
+    private let coreDataPersistenceProvider: PokemonCoreDataPersistenceServices
     private static let pokemonPaginationFile = "pokemon_pagination.json"
-    private static let pokemonListFile = "pokemon_list.json"
 
     init(
         pokemons: [Pokemon] = [],
         currentAPIPagination: PokemonAPIPagination? = nil,
-        filePersistence: FilePersistenceServices? = nil,
-        coreDataStack: PokemonCoreDataStack? = nil
+        filePersistenceProvider: FilePersistenceServices? = nil,
+        coreDataPersistenceProvider: PokemonCoreDataPersistenceServices? = nil
     ) {
-        self.coreDataStack = coreDataStack ?? .init(useInMemoryPersistence: false)
-        self.filePersistence = filePersistence ?? DocumentsFolderPersistence()
+        self.coreDataPersistenceProvider = coreDataPersistenceProvider ??
+        PokemonCoreDataStack(useInMemoryPersistence: false)
+        self.filePersistenceProvider = filePersistenceProvider ?? 
+        DocumentsFolderPersistence()
         self.pokemons = pokemons
         self.currentAPIPagination = currentAPIPagination
     }
@@ -61,81 +62,23 @@ actor PokemonLocalRepository: PokemonLocalDataServices {
         let currentAPIPagination = PokemonAPIPagination(from: currentPKMPagination)
         self.currentAPIPagination = currentAPIPagination
         
-        //TODO: Replace file persistence with Core Data, this will help us much with querying instead of loading all
-        //data and apply some filters
+        // If Pokemons are saved without errors into core data we proceed
+        // to save the paginated object but pagination depends on pokemons
+        // persistence. WE NEED THESE OPERATIONS BEING EXECUTED SEQUENTIALLY
         
-        try await withCheckedThrowingContinuation { [weak filePersistence] (continuation: CheckedContinuation<Void, Error>) -> Void in
-            guard let filePersistence else {
-                continuation.resume()
-                return
-            }
-            
-            filePersistence.saveData(for: currentAPIPagination, to: Self.pokemonPaginationFile) { error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume()
-                }
-            }
-        }
+        try await coreDataPersistenceProvider.save(newPokemons)
         
-        try await withCheckedThrowingContinuation { [weak filePersistence] (continuation: CheckedContinuation<Void, Error>) -> Void in
-            guard let filePersistence else {
-                continuation.resume()
-                return
-            }
-            
-            filePersistence.saveData(for: pokemons, to: Self.pokemonListFile) { error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume()
-                }
-            }
-        }
+        try await filePersistenceProvider.saveData(
+            for: currentAPIPagination, to: Self.pokemonPaginationFile
+        )
     }
     
     func loadIntialState() async throws -> PokemonRepositoryResult? {
-        //TODO: Replace file persistence with Core Data, this will help us much with querying instead of loading all
-        //data and apply some filters later.
+        let currentAPIPagination: PokemonAPIPagination? = try await filePersistenceProvider.loadData(
+            from: Self.pokemonPaginationFile
+        )
         
-        let currentAPIPagination: PokemonAPIPagination? = try await withCheckedThrowingContinuation {
-            [weak filePersistence] (continuation: CheckedContinuation<PokemonAPIPagination?, Error>) -> Void in
-            
-            guard let filePersistence else {
-                continuation.resume(returning: nil)
-                return
-            }
-            
-            filePersistence.loadData(from: Self.pokemonPaginationFile) { 
-                (result: Result<PokemonAPIPagination?, Error>) in
-                switch result {
-                case .success(let object):
-                    continuation.resume(returning: object)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
-        
-        let pokemons: [Pokemon] = try await withCheckedThrowingContinuation {
-            [weak filePersistence] (continuation: CheckedContinuation<[Pokemon], Error>) -> Void in
-            
-            guard let filePersistence else {
-                continuation.resume(returning: [])
-                return
-            }
-            
-            filePersistence.loadData(from: Self.pokemonListFile) {
-                (result: Result<[Pokemon], Error>) in
-                switch result {
-                case .success(let object):
-                    continuation.resume(returning: object)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        let pokemons: [Pokemon] = try await coreDataPersistenceProvider.loadPokemons()
 
         guard let currentAPIPagination, !pokemons.isEmpty else {
             return nil
@@ -159,9 +102,5 @@ actor PokemonLocalRepository: PokemonLocalDataServices {
         }
         
         return foundPokemon
-    }
-    
-    private func savePokemonsOnCoreData(with newPokemons: [Pokemon]) async throws {
-        
     }
 }

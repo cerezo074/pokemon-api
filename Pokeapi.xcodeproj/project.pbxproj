@@ -264,8 +264,8 @@
 				455EEF9D2BDA11170027779E /* PokemonRepository.swift */,
 				45A5C5442BDB2BA500B4AB4B /* PokemonRemoteRepository.swift */,
 				45A5C54A2BDB2CD700B4AB4B /* PokemonLocalRepository.swift */,
-				4503EE1E2BDBFB1400D09E55 /* MockObject.swift */,
 				45512B1A2BDF281800175A3B /* PokemonAPIPagination.swift */,
+				4503EE1E2BDBFB1400D09E55 /* MockObject.swift */,
 			);
 			path = Pokemon;
 			sourceTree = "<group>";

@@ -63,7 +63,7 @@ class PokemonCatalogItemViewModel: Hashable, Identifiable {
         name = pokemon.name
         id = pokemon.id
         formattedID = "#\(id)"
-        types = pokemon.types
+        types = pokemon.types.map { $0.value }
         thumbnailImageURL = pokemon.thumbnailImageURL
         style = .normal
     }

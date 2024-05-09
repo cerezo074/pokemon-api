@@ -168,7 +168,6 @@ class PokemonCatalogViewModel: ObservableObject {
         
         if (isFilterEnabled) {
             filteredItems = pokemonList.compactMap { item in
-                //TODO: Improve with a better approach NSPredicate or Regex
                 guard item.style == .normal, item.name.contains(word) else {
                     return nil
                 }

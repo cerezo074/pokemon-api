@@ -32,7 +32,7 @@ class PokemonRepository {
                     with: result.PKMPagination
                 )
             } catch {
-                print("Can't save downloaded data")
+                print("Can't save downloaded data due to the following error: \(error)")
             }
         }
         
