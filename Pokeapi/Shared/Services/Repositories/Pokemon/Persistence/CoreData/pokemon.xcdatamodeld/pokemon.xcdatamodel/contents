@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22757" systemVersion="23E224" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="CDAbility" representedClassName="CDAbility" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="pokemons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDPokemon" inverseName="abilities" inverseEntity="CDPokemon"/>
+    </entity>
     <entity name="CDPokemon" representedClassName="CDPokemon" syncable="YES" codeGenerationType="class">
-        <attribute name="abilities" attributeType="Transformable" customClassName="[String]"/>
         <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isFavorite" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="largeImageURL" attributeType="URI"/>
         <attribute name="moves" attributeType="Transformable" customClassName="[String]"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="thumbnailImageURL" attributeType="URI"/>
-        <attribute name="types" attributeType="Transformable" customClassName="[String]"/>
+        <relationship name="abilities" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDAbility" inverseName="pokemons" inverseEntity="CDAbility"/>
+        <relationship name="types" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDType" inverseName="pokemons" inverseEntity="CDType"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
+    </entity>
+    <entity name="CDType" representedClassName="CDType" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="pokemons" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDPokemon" inverseName="types" inverseEntity="CDPokemon"/>
     </entity>
 </model>
