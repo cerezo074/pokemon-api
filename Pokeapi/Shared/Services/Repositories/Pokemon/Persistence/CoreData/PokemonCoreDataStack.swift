@@ -47,7 +47,10 @@ class PokemonCoreDataStack: PokemonCoreDataPersistenceServices {
     
     func save(_ pokemons: [Pokemon]) async throws {
         let backgroundContext = makeContextWithData(with: pokemons)
-        
+        backgroundContext.mergePolicy = NSMergePolicy(
+            merge: .mergeByPropertyObjectTrumpMergePolicyType
+        )
+
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             backgroundContext.perform {
                 do {
