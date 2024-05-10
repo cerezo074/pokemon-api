@@ -18,15 +18,15 @@ class PokemonDetailViewModel: ObservableObject {
     }
     
     var pokemonTypes: [String] {
-        return pokemon?.types ?? []
+        return pokemon?.types.map { $0.value } ?? []
     }
     
     var pokemonMoves: [String] {
-        return pokemon?.moves ?? []
+        return pokemon?.moves.map { $0.value } ?? []
     }
     
     var pokemonAbilities: [String] {
-        return pokemon?.abilities ?? []
+        return pokemon?.abilities.map { $0.value } ?? []
     }
     
     private let pokemonID: Int

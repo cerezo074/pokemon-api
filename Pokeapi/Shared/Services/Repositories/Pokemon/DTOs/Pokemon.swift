@@ -14,18 +14,18 @@ struct Pokemon: Comparable, Hashable, Codable {
     let name: String
     let thumbnailImageURL: URL
     let largeImageURL: URL
-    let types: [String]
-    let moves: [String]
-    let abilities: [String]
+    let types: [PokemonMetaData]
+    let moves: [PokemonMetaData]
+    let abilities: [PokemonMetaData]
     
     init(
         id: Int,
         name: String,
         thumbnailImageURL: URL,
         largeImageURL: URL,
-        types: [String],
-        moves: [String],
-        abilities: [String]
+        types: [PokemonMetaData],
+        moves: [PokemonMetaData],
+        abilities: [PokemonMetaData]
     ) {
         self.id = id
         self.name = name
@@ -53,9 +53,31 @@ struct Pokemon: Comparable, Hashable, Codable {
         self.id = id
         self.thumbnailImageURL = thumbnailImageURL
         self.largeImageURL = largeImageURL
-        self.types = pokemonTypes.compactMap { $0.type?.name }
-        self.moves = pokemonMoves.compactMap { $0.move?.name }
-        self.abilities = pokemonAbilities.compactMap { $0.ability?.name }
+        self.moves = pokemonMoves.compactMap {
+            $0.move?.makePokemonMetadata()
+        }
+        self.types = pokemonTypes.compactMap {
+            $0.type?.makePokemonMetadata()
+        }
+        self.abilities = pokemonAbilities.compactMap {
+            $0.ability?.makePokemonMetadata()
+        }
+    }
+    
+    init?(data: CDPokemon) {
+        guard let name = data.name,
+              let thumbnailImageURL = data.thumbnailImageURL,
+              let largeImageURL = data.largeImageURL else {
+                  return nil
+              }
+        
+        self.name = name
+        self.id = Int(data.id)
+        self.thumbnailImageURL = thumbnailImageURL
+        self.largeImageURL = largeImageURL
+        self.moves = data.makeMovesMedatata()
+        self.types = data.makeTypesMedatata()
+        self.abilities = data.makeAbilitiesMedatata()
     }
     
     static func < (lhs: Pokemon, rhs: Pokemon) -> Bool {
@@ -68,5 +90,81 @@ struct Pokemon: Comparable, Hashable, Codable {
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+}
+
+struct PokemonMetaData: Equatable, Identifiable, Codable {
+    typealias ID = Int
+    let id: Int
+    let value: String
+    
+    init(id: Int, value: String) {
+        self.id = id
+        self.value = value
+    }
+    
+    init?(urlString: String?, name: String?) {
+        guard let name,
+              let rawURL = urlString,
+              let StringID = URL(string: rawURL)?.lastPathComponent,
+              let id = Int(StringID) else {
+            return nil
+        }
+        
+        self.id = id
+        self.value = name
+    }
+}
+
+extension PKMNamedAPIResource {
+    
+    func makePokemonMetadata() -> PokemonMetaData? {
+        return PokemonMetaData(urlString: url, name: name)
+    }
+    
+}
+
+extension CDPokemon {
+    
+    func makeTypesMedatata() -> [PokemonMetaData] {
+        guard let types else { return [] }
+        
+        return types.compactMap {
+            $0 as? CDType
+        }.compactMap { item -> PokemonMetaData? in
+            guard let name = item.name else {
+                return nil
+            }
+            
+            return PokemonMetaData(id: Int(item.id), value: name)
+        }
+    }
+    
+    func makeAbilitiesMedatata() -> [PokemonMetaData] {
+        guard let abilities else { return [] }
+        
+        return abilities.compactMap {
+            $0 as? CDAbility
+        }.compactMap { item -> PokemonMetaData? in
+            guard let name = item.name else {
+                return nil
+            }
+            
+            return PokemonMetaData(id: Int(item.id), value: name)
+        }
+    }
+    
+    func makeMovesMedatata() -> [PokemonMetaData] {
+        guard let moves else { return [] }
+        
+        return moves.compactMap {
+            $0 as? CDMove
+        }.compactMap { item -> PokemonMetaData? in
+            guard let name = item.name else {
+                return nil
+            }
+            
+            return PokemonMetaData(id: Int(item.id), value: name)
+        }
     }
 }

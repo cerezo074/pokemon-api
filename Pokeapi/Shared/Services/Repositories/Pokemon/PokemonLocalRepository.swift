@@ -7,6 +7,7 @@
 
 import Foundation
 import PokemonAPI
+import CoreData
 
 protocol PokemonLocalDataServices {
     func getPokemon(for id: Int) async throws -> Pokemon
@@ -27,15 +28,20 @@ actor PokemonLocalRepository: PokemonLocalDataServices {
     
     private var pokemons: [Pokemon]
     private var currentAPIPagination: PokemonAPIPagination?
-    private lazy var filePersistence = FilePersistence()
+    private let filePersistenceProvider: FilePersistenceServices
+    private let coreDataPersistenceProvider: PokemonCoreDataPersistenceServices
     private static let pokemonPaginationFile = "pokemon_pagination.json"
-    private static let pokemonListFile = "pokemon_list.json"
 
-    // TODO: Inject persistence mechanism and hold it as an interface (e.g core data, file system)
     init(
         pokemons: [Pokemon] = [],
-        currentAPIPagination: PokemonAPIPagination? = nil
+        currentAPIPagination: PokemonAPIPagination? = nil,
+        filePersistenceProvider: FilePersistenceServices? = nil,
+        coreDataPersistenceProvider: PokemonCoreDataPersistenceServices? = nil
     ) {
+        self.coreDataPersistenceProvider = coreDataPersistenceProvider ??
+        PokemonCoreDataStack(useInMemoryPersistence: false)
+        self.filePersistenceProvider = filePersistenceProvider ?? 
+        DocumentsFolderPersistence()
         self.pokemons = pokemons
         self.currentAPIPagination = currentAPIPagination
     }
@@ -53,19 +59,26 @@ actor PokemonLocalRepository: PokemonLocalDataServices {
         with currentPKMPagination: PKMPagedObject<PKMPokemon>
     ) async throws {
         self.pokemons.append(contentsOf: newPokemons)
-        self.currentAPIPagination = PokemonAPIPagination(from: currentPKMPagination)
+        let currentAPIPagination = PokemonAPIPagination(from: currentPKMPagination)
+        self.currentAPIPagination = currentAPIPagination
         
-        //TODO: Replace file persistence with Core Data, this will help us much with querying instead of loading all
-        //data and apply some filters
-        try filePersistence.saveData(for: currentAPIPagination, to: Self.pokemonPaginationFile)
-        try filePersistence.saveData(for: pokemons, to: Self.pokemonListFile)
+        // If Pokemons are saved without errors into core data we proceed
+        // to save the paginated object but pagination depends on pokemons
+        // persistence. WE NEED THESE OPERATIONS BEING EXECUTED SEQUENTIALLY
+        
+        try await coreDataPersistenceProvider.save(newPokemons)
+        
+        try await filePersistenceProvider.saveData(
+            for: currentAPIPagination, to: Self.pokemonPaginationFile
+        )
     }
     
-    func loadIntialState() throws -> PokemonRepositoryResult? {
-        //TODO: Replace file persistence with Core Data, this will help us much with querying instead of loading all
-        //data and apply some filters later.
-        let currentAPIPagination: PokemonAPIPagination? = try filePersistence.loadData(from: Self.pokemonPaginationFile)
-        let pokemons: [Pokemon] = try filePersistence.loadData(from: Self.pokemonListFile) ?? []
+    func loadIntialState() async throws -> PokemonRepositoryResult? {
+        let currentAPIPagination: PokemonAPIPagination? = try await filePersistenceProvider.loadData(
+            from: Self.pokemonPaginationFile
+        )
+        
+        let pokemons: [Pokemon] = try await coreDataPersistenceProvider.loadPokemons()
 
         guard let currentAPIPagination, !pokemons.isEmpty else {
             return nil
