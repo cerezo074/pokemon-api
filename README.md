@@ -44,7 +44,7 @@ Why Main/App Navigation for now is a class and conforms to ObservableObject? In 
 
 The app navigation is attached to this event authModule.isSessionValid, and when it changes, your app does as well. Also, another important aspect is to support iOS 15 versions. I could use Navigation Stack with its Path property to simplify the implementation, but this will limit the support, and keep in mind that many apps can't afford to move forward quickly.
 
-## Future Things
+## Next Things
 
 ### Test
 
@@ -56,5 +56,5 @@ Data requires to be filtered with different criteria. So, in order to make the a
 
 ### New Modules
 
-App modules are still under development, so in the future, I expect to implement them.
+App modules are still under development, so in the future, I expect to implement more.
 ```
