@@ -7,6 +7,7 @@
 
 import Foundation
 import PokemonAPI
+import Combine
 
 enum MockObject {
     
@@ -621,6 +622,32 @@ extension MockObject {
         
         func loadIntialState() async throws -> PokemonRepositoryResult? {
             return nil
+        }
+    }
+    
+    class EmptyUserSessionProvider: UserSessionServices {
+        var isGuestUserAllowed: Bool = false
+        
+        var isSignedIn: Bool = true
+        
+        var isSignedInPublisher: AnyPublisher<Bool, Never> {
+            Just(isSignedIn).eraseToAnyPublisher()
+        }
+        
+        var didLoadInitialDataPublisher: AnyPublisher<Void, Never> {
+            Just(()).eraseToAnyPublisher()
+        }
+        
+        func signIn() async {
+            
+        }
+        
+        func signOut() async {
+            
+        }
+        
+        func loadData() async {
+            
         }
     }
 }

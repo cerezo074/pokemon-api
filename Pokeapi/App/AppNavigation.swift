@@ -11,31 +11,68 @@ import Combine
 
 class AppNavigator: ObservableObject {
     
-    @Published
-    private var menuViewModel: MainMenuViewModel
-    private var subscriptions: Set<AnyCancellable> = []
-    private let pokemonRepository: PokemonRepository
+    private enum AppState {
+        case showSplashScreen
+        case showOnboarding
+        case showHomeScreen
+        case showLoginScreen
+    }
     
+    private let menuViewModel: MainMenuViewModel
+    private let pokemonRepository: PokemonRepository
+    private let userSessionManager: any UserSessionServices
+    private let userOnboardingManager: any UserOnboardingServices
+    private let userSessionNavigator: UserSessionNavigator
+    private var subscriptions: Set<AnyCancellable> = []
+    private var appState: AppState = .showSplashScreen
+
     init(
-        menuViewModel: MainMenuViewModel? = nil,
-        pokemonRepository: PokemonRepository? = nil
+        menuViewModel: MainMenuViewModel,
+        pokemonRepository: PokemonRepository,
+        userSessionManager: any UserSessionServices,
+        userOnboardingManager: any UserOnboardingServices
     ) {
-        let menuViewModel = MenuView_Previews.defaultMenuView
         self.menuViewModel = menuViewModel
-        self.pokemonRepository = pokemonRepository ?? 
-        PokemonRepository(
-            remoteRepository: PokemonRemoteRepository(),
-            localRepository: PokemonLocalRepository()
-        )
+        self.userSessionManager = userSessionManager
+        self.pokemonRepository = pokemonRepository
+        self.userSessionNavigator = UserSessionNavigator(userSessionManager: userSessionManager)
+        self.userOnboardingManager = userOnboardingManager
         menuViewModel.actionHandler = self
         
-        menuViewModel.objectWillChange.sink { [weak self] _ in
+        userSessionManager.isSignedInPublisher.sink { [weak self] isUserSignedIn in
+            self?.appState = isUserSignedIn ? .showHomeScreen : .showLoginScreen
             self?.objectWillChange.send()
+        }.store(in: &subscriptions)
+        
+        userSessionManager.didLoadInitialDataPublisher.sink { [weak self] in
+            self?.didLoadInitialData()
         }.store(in: &subscriptions)
     }
         
+    @MainActor
     @ViewBuilder
     func buildRootScreen() -> some View {
+        switch appState {
+        case .showSplashScreen:
+            SplashScreen(title: "Splash Screen...")
+                .task {
+                    await self.userSessionManager.loadData()
+                }
+        case .showOnboarding:
+            OnboardingNavigator(didFinishOnboarding: { [weak self] in
+                self?.didFinishOnboarding()
+            }).start()
+        case .showLoginScreen where !userSessionManager.isGuestUserAllowed:
+            userSessionNavigator.start()
+        case .showHomeScreen where !userSessionManager.isGuestUserAllowed:
+            buildContentForSingedInUser()
+        default:
+            buildContentForSingedInUser()
+        }
+    }
+    
+    @ViewBuilder
+    private func buildContentForSingedInUser() -> some View {
         if #available(iOS 16.0, *) {
             NavigationStack {
                 buildScreenForSelectedMenuItem()
@@ -47,7 +84,6 @@ class AppNavigator: ObservableObject {
         }
     }
     
-    @ViewBuilder
     private func buildScreenForSelectedMenuItem() -> some View {
         VStack {
             Spacer()
@@ -65,8 +101,10 @@ class AppNavigator: ObservableObject {
             case .home:
                 let navigator = PokemonCatalogNavigator(
                     screen: .list,
-                    pokemonRepository: pokemonRepository
+                    pokemonRepository: pokemonRepository,
+                    userSessionManager: userSessionManager
                 )
+                
                 navigator.start()
             case .comparator:
                 let navigator = PokemonComparatorNavigator()
@@ -83,12 +121,40 @@ class AppNavigator: ObservableObject {
         }
     }
     
+    private func didFinishOnboarding() {
+        if userSessionManager.isSignedIn || userSessionManager.isGuestUserAllowed {
+            appState = .showHomeScreen
+        } else {
+            appState = .showLoginScreen
+        }
+        
+        objectWillChange.send()
+    }
+    
+    private func didLoadInitialData() {
+        Task {
+            if await userOnboardingManager.isOnboardingCompleted() {
+                await MainActor.run {
+                    didFinishOnboarding()
+                }
+                
+                return
+            }
+            
+            await MainActor.run {
+                appState = .showOnboarding
+                objectWillChange.send()
+            }
+        }
+    }
 }
 
 extension AppNavigator: MainMenuActionHandler {
     
     func didSelect(item: MainMenuItem) {
         print("Selected menu option: \(item)")
+        appState = .showHomeScreen
+        objectWillChange.send()
     }
     
 }

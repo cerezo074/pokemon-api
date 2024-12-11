@@ -42,12 +42,15 @@ struct PokemonCatalogNavigator {
     
     private var screen: Screen
     private let pokemonRepository: PokemonRepository
+    private let userSessionManager: UserSessionServices
     
     init(
         screen: Screen,
-        pokemonRepository: PokemonRepository? = nil
+        pokemonRepository: PokemonRepository? = nil,
+        userSessionManager: UserSessionServices
     ) {
         self.screen = screen
+        self.userSessionManager = userSessionManager
         self.pokemonRepository = pokemonRepository ??
         PokemonRepository(
             remoteRepository: PokemonRemoteRepository(),
@@ -63,20 +66,35 @@ struct PokemonCatalogNavigator {
     func openDetail(for selectedPokemonID: Int) -> PokemonCatalogNavigator {
         let newScreen: Screen = .detail(pokemonID: selectedPokemonID)
         
-        return PokemonCatalogNavigator(screen: newScreen, pokemonRepository: pokemonRepository)
+        return PokemonCatalogNavigator(
+            screen: newScreen,
+            pokemonRepository: pokemonRepository,
+            userSessionManager: userSessionManager
+        )
     }
     
     func openFilter(with observer: any FilterCatalogObserver) -> PokemonCatalogNavigator {
         let newScreen: Screen = .filter(observer: observer)
         
-        return PokemonCatalogNavigator(screen: newScreen, pokemonRepository: pokemonRepository)
+        return PokemonCatalogNavigator(
+            screen: newScreen,
+            pokemonRepository: pokemonRepository,
+            userSessionManager: userSessionManager
+        )
+    }
+    
+    func openUserSession() {
+        
     }
 
     @ViewBuilder
     private func makeScreen() -> some View {
         switch screen {
         case .list:
-            let viewModel = PokemonCatalogViewModel(repository: pokemonRepository)
+            let viewModel = PokemonCatalogViewModel(
+                repository: pokemonRepository,
+                userSessionManager: userSessionManager
+            )
             
             if #available(iOS 16.0, *) {
                 PokemonCatalogView(viewModel: viewModel, navigator: self).navigationDestination(

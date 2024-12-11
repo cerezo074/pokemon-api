@@ -60,15 +60,27 @@ struct PokemonCatalogView: View {
                 }.padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
             }.toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        navigator.openFilter(with: self.viewModel).start()
-                    } label: {
-                        Image(systemName: "line.3.horizontal.decrease.circle")
-                            .tint(
-                                viewModel.areFilterActives ?
-                                DesingSystem.Button.Color.navigationActiveColor :
-                                    DesingSystem.Button.Color.navigationInActiveColor
-                            )
+                    HStack {
+                        NavigationLink {
+                            navigator.openFilter(with: self.viewModel).start()
+                        } label: {
+                            Image(systemName: "line.3.horizontal.decrease.circle")
+                                .tint(
+                                    viewModel.areFilterActives ?
+                                    DesingSystem.Button.Color.navigationActiveColor :
+                                        DesingSystem.Button.Color.navigationInActiveColor
+                                )
+                        }
+                        Button {
+                            navigator.openUserSession()
+                        } label: {
+                            Image(systemName: "person.crop.circle.fill")
+                                .tint(
+                                    viewModel.isUserSessionActive ?
+                                    DesingSystem.Button.Color.userSessionActiveColor :
+                                        DesingSystem.Button.Color.userSessionInActiveColor
+                                )
+                        }
                     }
                 }
             }
@@ -115,8 +127,14 @@ private extension PokemonCatalogView {
         )
         
         PokemonCatalogView(
-            viewModel: PokemonCatalogViewModel(repository: pokemonRepository),
-            navigator: PokemonCatalogNavigator(screen: .list)
+            viewModel: PokemonCatalogViewModel(
+                repository: pokemonRepository,
+                userSessionManager: MockObject.EmptyUserSessionProvider()
+            ),
+            navigator: PokemonCatalogNavigator(
+                screen: .list,
+                userSessionManager: MockObject.EmptyUserSessionProvider()
+            )
         )
     }
 }
