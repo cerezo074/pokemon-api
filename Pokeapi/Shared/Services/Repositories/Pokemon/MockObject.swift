@@ -638,15 +638,21 @@ extension MockObject {
             Just(()).eraseToAnyPublisher()
         }
         
-        func signIn() async {
+        func signIn(didFinish: @escaping () -> Void) async {
             
         }
         
-        func signOut() async {
+        func signOut(didFinish: @escaping () -> Void) async {
             
         }
         
         func loadData() async {
+            
+        }
+    }
+    
+    class EmptyUserSessionUIActionHandler: UserSessionUIActions {
+        func openSignInFlow() {
             
         }
     }

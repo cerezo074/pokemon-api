@@ -42,15 +42,18 @@ struct PokemonCatalogNavigator {
     
     private var screen: Screen
     private let pokemonRepository: PokemonRepository
-    private let userSessionManager: UserSessionServices
+    private let userSessionStateHandler: UserSessionServices
+    private unowned let userSessionUIActionHandler: UserSessionUIActions
     
     init(
         screen: Screen,
         pokemonRepository: PokemonRepository? = nil,
-        userSessionManager: UserSessionServices
+        userSessionStateHandler: UserSessionServices,
+        userSessionUIActionHandler: UserSessionUIActions
     ) {
         self.screen = screen
-        self.userSessionManager = userSessionManager
+        self.userSessionStateHandler = userSessionStateHandler
+        self.userSessionUIActionHandler = userSessionUIActionHandler
         self.pokemonRepository = pokemonRepository ??
         PokemonRepository(
             remoteRepository: PokemonRemoteRepository(),
@@ -69,7 +72,8 @@ struct PokemonCatalogNavigator {
         return PokemonCatalogNavigator(
             screen: newScreen,
             pokemonRepository: pokemonRepository,
-            userSessionManager: userSessionManager
+            userSessionStateHandler: userSessionStateHandler,
+            userSessionUIActionHandler: userSessionUIActionHandler
         )
     }
     
@@ -79,12 +83,13 @@ struct PokemonCatalogNavigator {
         return PokemonCatalogNavigator(
             screen: newScreen,
             pokemonRepository: pokemonRepository,
-            userSessionManager: userSessionManager
+            userSessionStateHandler: userSessionStateHandler,
+            userSessionUIActionHandler: userSessionUIActionHandler
         )
     }
     
     func openUserSession() {
-        
+        userSessionUIActionHandler.openSignInFlow()
     }
 
     @ViewBuilder
@@ -93,7 +98,7 @@ struct PokemonCatalogNavigator {
         case .list:
             let viewModel = PokemonCatalogViewModel(
                 repository: pokemonRepository,
-                userSessionManager: userSessionManager
+                userSessionManager: userSessionStateHandler
             )
             
             if #available(iOS 16.0, *) {

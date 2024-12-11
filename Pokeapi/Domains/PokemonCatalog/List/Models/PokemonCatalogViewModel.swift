@@ -53,7 +53,7 @@ class PokemonCatalogViewModel: ObservableObject {
         isSearchingPokemons = false
         isLoadingDataAtFirstTime = true
         areFilterActives = false
-        isUserSessionActive = false
+        isUserSessionActive = userSessionManager.isSignedIn
         
         $searchText
             .removeDuplicates()

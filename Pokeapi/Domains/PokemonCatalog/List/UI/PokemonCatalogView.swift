@@ -61,26 +61,8 @@ struct PokemonCatalogView: View {
             }.toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack {
-                        NavigationLink {
-                            navigator.openFilter(with: self.viewModel).start()
-                        } label: {
-                            Image(systemName: "line.3.horizontal.decrease.circle")
-                                .tint(
-                                    viewModel.areFilterActives ?
-                                    DesingSystem.Button.Color.navigationActiveColor :
-                                        DesingSystem.Button.Color.navigationInActiveColor
-                                )
-                        }
-                        Button {
-                            navigator.openUserSession()
-                        } label: {
-                            Image(systemName: "person.crop.circle.fill")
-                                .tint(
-                                    viewModel.isUserSessionActive ?
-                                    DesingSystem.Button.Color.userSessionActiveColor :
-                                        DesingSystem.Button.Color.userSessionInActiveColor
-                                )
-                        }
+                        filterButton
+                        sessionButton
                     }
                 }
             }
@@ -88,6 +70,32 @@ struct PokemonCatalogView: View {
             .onTapGesture {
                 inputFocusType = nil
             }
+        }
+    }
+    
+    private var filterButton: some View {
+        NavigationLink {
+            navigator.openFilter(with: self.viewModel).start()
+        } label: {
+            Image(systemName: "line.3.horizontal.decrease.circle")
+                .tint(
+                    viewModel.areFilterActives ?
+                    DesingSystem.Button.Color.navigationActiveColor :
+                        DesingSystem.Button.Color.navigationInActiveColor
+                )
+        }
+    }
+    
+    private var sessionButton: some View {
+        Button {
+            navigator.openUserSession()
+        } label: {
+            Image(systemName: "person.crop.circle.fill")
+                .tint(
+                    viewModel.isUserSessionActive ?
+                    DesingSystem.Button.Color.userSessionActiveColor :
+                        DesingSystem.Button.Color.userSessionInActiveColor
+                )
         }
     }
 }
@@ -133,7 +141,8 @@ private extension PokemonCatalogView {
             ),
             navigator: PokemonCatalogNavigator(
                 screen: .list,
-                userSessionManager: MockObject.EmptyUserSessionProvider()
+                userSessionStateHandler: MockObject.EmptyUserSessionProvider(),
+                userSessionUIActionHandler: MockObject.EmptyUserSessionUIActionHandler()
             )
         )
     }

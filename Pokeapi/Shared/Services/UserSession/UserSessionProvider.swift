@@ -13,8 +13,8 @@ protocol UserSessionServices {
     var isSignedIn: Bool { get }
     var isSignedInPublisher: AnyPublisher<Bool, Never> { get }
     var didLoadInitialDataPublisher: AnyPublisher<Void, Never> { get }
-    func signIn() async
-    func signOut() async
+    func signIn(didFinish: @escaping () -> Void) async
+    func signOut(didFinish: @escaping () -> Void) async
     func loadData() async
 }
 
@@ -38,14 +38,24 @@ class UserSessionProvider: UserSessionServices {
     private let didLoadInitialDataSubject: PassthroughSubject<Void, Never> = .init()
     private let isSignedInSubject: PassthroughSubject<Bool, Never> = .init()
     
-    func signIn() async {
+    func signIn(didFinish: @escaping () -> Void) async {
         try? await Task.sleep(nanoseconds: 5_000_000_000)
-        isSignedInSubject.send(true)
+        isSignedIn = true
+        isSignedInSubject.send(isSignedIn)
+        
+        await MainActor.run {
+            didFinish()
+        }
     }
     
-    func signOut() async {
+    func signOut(didFinish: @escaping () -> Void) async {
         try? await Task.sleep(nanoseconds: 5_000_000_000)
-        isSignedInSubject.send(false)
+        isSignedIn = false
+        isSignedInSubject.send(isSignedIn)
+        
+        await MainActor.run {
+            didFinish()
+        }
     }
     
     func loadData() async {

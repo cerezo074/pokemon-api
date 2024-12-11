@@ -65,14 +65,16 @@ class AppNavigator: ObservableObject {
         case .showLoginScreen where !userSessionManager.isGuestUserAllowed:
             userSessionNavigator.start()
         case .showHomeScreen where !userSessionManager.isGuestUserAllowed:
-            buildContentForSingedInUser()
+            buildContentForSignedInUser()
         default:
-            buildContentForSingedInUser()
+            SignInModalView(userSessionNavigator: userSessionNavigator) {
+                buildContentForSignedInUser()
+            }
         }
     }
     
     @ViewBuilder
-    private func buildContentForSingedInUser() -> some View {
+    private func buildContentForSignedInUser() -> some View {
         if #available(iOS 16.0, *) {
             NavigationStack {
                 buildScreenForSelectedMenuItem()
@@ -102,7 +104,8 @@ class AppNavigator: ObservableObject {
                 let navigator = PokemonCatalogNavigator(
                     screen: .list,
                     pokemonRepository: pokemonRepository,
-                    userSessionManager: userSessionManager
+                    userSessionStateHandler: userSessionManager,
+                    userSessionUIActionHandler: userSessionNavigator
                 )
                 
                 navigator.start()

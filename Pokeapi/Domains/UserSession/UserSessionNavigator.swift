@@ -7,7 +7,13 @@
 
 import SwiftUI
 
+protocol UserSessionUIActions: AnyObject {
+    func openSignInFlow()
+}
+
 class UserSessionNavigator: ObservableObject {
+    @Published
+    var showSignInFlow: Bool = false
     private let userSessionManager: any UserSessionServices
 
     init(userSessionManager: UserSessionServices) {
@@ -20,50 +26,10 @@ class UserSessionNavigator: ObservableObject {
     }
 }
 
-struct SignInView: View {
-    @Environment(\.dismiss)
-    private var dismiss
-    @State
-    private var disableButton: Bool = false
+extension UserSessionNavigator: UserSessionUIActions {
     
-    let userSessionManager: any UserSessionServices
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Login Screen...")
-                .font(.title2)
-                .padding(.bottom, 40)
-            
-            Button(action: {
-                disableButton = true
-                
-                Task {
-                    await self.userSessionManager.signIn()
-                }
-            }) {
-                Text("Tap to sign in")
-                    .font(.callout)
-                    .foregroundColor(.white)
-                    .padding()
-            }
-            .background(disableButton ? Color.gray : Color.brown)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding()
-            .disabled(disableButton)
-                      
-            if userSessionManager.isGuestUserAllowed {
-                Button(action: {
-                    dismiss.callAsFunction()
-                }) {
-                    Text("Tap to dismiss")
-                        .font(.callout)
-                        .foregroundColor(.white)
-                        .padding()
-                }
-                .background(Color.brown)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding()
-            }
-        }
+    func openSignInFlow() {
+        showSignInFlow = true
     }
+    
 }
