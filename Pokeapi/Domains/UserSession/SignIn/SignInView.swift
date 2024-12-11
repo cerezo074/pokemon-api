@@ -19,9 +19,18 @@ struct SignInView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Login Screen")
+            Text("User Session Screen")
                 .font(.title2)
+                .fontWeight(.bold)
                 .padding(.bottom, 40)
+            
+            if !showLoader, let welcomeMessage {
+                Text(welcomeMessage)
+                    .font(.headline)
+                    .fontWeight(.medium)
+                    .padding(.bottom, 20)
+            }
+            
             if showLoader {
                 ProgressView("Wait a moment ...")
             } else {
@@ -32,6 +41,18 @@ struct SignInView: View {
                 }
             }
         }
+    }
+    
+    private var welcomeMessage: String? {
+        if userSessionManager.isSignedIn {
+            return "Welcome registered user!"
+        }
+        
+        if userSessionManager.isGuestUserAllowed {
+            return "Welcome guest user!"
+        }
+        
+        return nil
     }
     
     private var mainButton: some View {

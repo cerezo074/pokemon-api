@@ -16,6 +16,6 @@ class UserOnboardingProvider: UserOnboardingServices {
         try? await Task.sleep(nanoseconds: 1_500_000_000)
 
         // TODO: Inject and use User Default
-        return true
+        return false
     }
 }

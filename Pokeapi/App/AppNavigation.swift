@@ -15,7 +15,7 @@ class AppNavigator: ObservableObject {
         case showSplashScreen
         case showOnboarding
         case showHomeScreen
-        case showLoginScreen
+        case showUserScreen
     }
     
     private let menuViewModel: MainMenuViewModel
@@ -40,7 +40,7 @@ class AppNavigator: ObservableObject {
         menuViewModel.actionHandler = self
         
         userSessionManager.isSignedInPublisher.sink { [weak self] isUserSignedIn in
-            self?.appState = isUserSignedIn ? .showHomeScreen : .showLoginScreen
+            self?.appState = isUserSignedIn ? .showHomeScreen : .showUserScreen
             self?.objectWillChange.send()
         }.store(in: &subscriptions)
         
@@ -54,7 +54,7 @@ class AppNavigator: ObservableObject {
     func buildRootScreen() -> some View {
         switch appState {
         case .showSplashScreen:
-            SplashScreen(title: "Splash Screen...")
+            SplashScreen(title: "Splash Screen")
                 .task {
                     await self.userSessionManager.loadData()
                 }
@@ -62,10 +62,8 @@ class AppNavigator: ObservableObject {
             OnboardingNavigator(didFinishOnboarding: { [weak self] in
                 self?.didFinishOnboarding()
             }).start()
-        case .showLoginScreen where !userSessionManager.isGuestUserAllowed:
+        case .showUserScreen where !userSessionManager.isGuestUserAllowed:
             userSessionNavigator.start()
-        case .showHomeScreen where !userSessionManager.isGuestUserAllowed:
-            buildContentForSignedInUser()
         default:
             SignInModalView(userSessionNavigator: userSessionNavigator) {
                 buildContentForSignedInUser()
@@ -128,7 +126,7 @@ class AppNavigator: ObservableObject {
         if userSessionManager.isSignedIn || userSessionManager.isGuestUserAllowed {
             appState = .showHomeScreen
         } else {
-            appState = .showLoginScreen
+            appState = .showUserScreen
         }
         
         objectWillChange.send()

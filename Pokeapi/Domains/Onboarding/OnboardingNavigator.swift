@@ -14,11 +14,16 @@ struct OnboardingNavigator {
     
     @ViewBuilder
     func start() -> some View {
+        Text("Onboarding Screen")
+            .font(.title2)
+            .fontWeight(.bold)
+            .padding(.bottom, 40)
+        
         Button(action: {
             didFinishOnboarding()
             disableButton = true
         }) {
-            Text("Onboarding Screen, press this button to finish it")
+            Text("Press this button to complete it.")
                 .font(.callout)
                 .foregroundColor(.white)
                 .padding()
