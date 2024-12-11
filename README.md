@@ -1,60 +1,109 @@
 # iOS Pokedex: A Handheld Electronic Encyclopedia about Pokémon
 
-## What is this?
+## Overview
 
-This is a small project made for iOS that aims to consume the well-known [PokeAPI](https://pokeapi.co), an HTTP Rest API for consulting Pokémon data. The purpose of this app is to demonstrate iOS skills. This app is still ongoing, so there are many things to implement. That's why you will see empty screens for some modules.
+This is an iOS app designed to demonstrate skills in consuming REST APIs, specifically the [PokeAPI](https://pokeapi.co), which provides data on Pokémon. The app allows users to explore Pokémon data, search for specific Pokémon, and view detailed information about them.
 
-## What features can this app bring to you?
+The project is ongoing, and while several key features are already implemented, there are still more modules and enhancements to come. You may notice some incomplete or placeholder screens.
 
-### 1. Home Module
+## Features
 
-This module shows all the available Pokémon in a two-column grid.
+### 1. **Home Module**
+   - Displays all available Pokémon in a two-column grid.
+   - Implements **pagination** to avoid loading all Pokémon at once.
+   - **Search functionality**: Search Pokémon by name.
+   - **Offline Support**: Saves downloaded Pokémon locally, allowing users to access them even without an internet connection.
+   - **Retry Mechanism**: If data retrieval fails, a retry button is provided to re-initiate the download.
+   - **Detail View**: Tapping on a Pokémon will navigate to a detailed screen showing more information.
 
-- We use pagination instead of fetching all the Pokémon at once.
-- Search Pokémon by name.
-- Saves the downloaded Pokémon in your device in case you don't have an internet connection; you're still able to use them.
-- In case the app fails to retrieve the Pokémon, you can interact with a Retry button and initialize the download again.
-- Shows a detail screen for a Pokémon when the user taps on a Pokémon from the list.
+   [Example Video](https://github.com/cerezo074/pokemon-api/assets/6471815/9c49186b-8ce8-488b-a2d5-5deab8dbec1e)
 
-  [VIDEO](https://github.com/cerezo074/pokemon-api/assets/6471815/9c49186b-8ce8-488b-a2d5-5deab8dbec1e)
+### 2. **Sign In/Sign Out Simulation**
+   - Users can sign in and out of the app, though the current implementation is simulated.
+   - **Task Simulation**: A `Task.sleep(5 seconds)` is used to simulate a long-running process for sign-in and sign-out routines. This will later be replaced with actual authentication logic.
 
-## Technical Aspects
+### 3. **Splash Screen & App Initialization**
+   - The app features a splash animation that is displayed during the initial app launch.
+   - **Simulated Initialization**: A 5-second delay (using `Task.sleep`) mimics loading dependencies such as feature flags or user experiments based on external configurations. In a future release, this will be replaced with actual calls to load remote configurations and features.
 
-### Data
+### 4. **Onboarding Flow**
+   - After the splash screen, users are guided through an onboarding process designed to introduce them to the app’s features and functionality.
+   - **Hardcoded Persistence**: Currently, the onboarding flow is controlled by a hardcoded flag that determines whether the user should go through it. This will eventually be replaced with dynamic persistence based on user data or external configuration.
+   - The onboarding flow ensures that users are introduced to key features before accessing the app’s main content.
 
-Pokémon data was retrieved using the library made by [Kinkofer](https://github.com/kinkofer/PokemonAPI). However, because I wanted to show Pokémon thumbnail images in the list, I needed to call 2 endpoints, not only one. The first one is the list endpoint, which only gives you names and Pokémon URLs. For each list item returned, I called the Pokémon info endpoint, which returns all details about a Pokémon(I used a TaskGroup). But that wasn't enough, I've [forked](a5bd7587c29aa371382277e24737d162ae6a84f0) the library and enhanced it by exposing the large Pokémon image (there were only small images) and also opened the pagination model to make it easy to be recreated (I persist this item too, and I want to use Core Data or a query mechanism to improve filter performance).
+### 5. **Guest User Support & Sign-In Requirement**
+   - The app allows users to launch it either as a **Guest** or by requiring a **Sign-In**.
+   - **Guest User Mode**: A boolean flag `isGuestUserAllowed` controls whether the app allows guest access or prompts for sign-in immediately upon launch. This flag is currently hardcoded but can be configured dynamically through external settings.
 
-Data is being saved locally in the documents folder. For now, the implementation is pretty straightforward and doesn't block the main thread.
+## Technical Details
+
+### Data Handling
+- Pokémon data is fetched using the [PokemonAPI](https://github.com/kinkofer/PokemonAPI) library.
+- To show Pokémon images alongside the list, two API endpoints are called:
+   1. **List Endpoint**: Retrieves names and URLs for Pokémon.
+   2. **Info Endpoint**: Fetches detailed information, including the large Pokémon images.
+   - The library was **forked and enhanced** to support large Pokémon images and improved pagination handling (see [fork](a5bd7587c29aa371382277e24737d162ae6a84f0)).
+   - Local storage is handled using the device's **Documents folder**, with asynchronous fetching to prevent blocking the main thread.
 
 ### Architecture
 
-I picked MVVM. Why? It's simple to implement and to scale up. This time, I tried to make it simple to wire up the navigation component. The idea is to use a stateless/cheap/hierarchical navigation. At the top, the app provides a navigation component (which makes the navigation UI component), and for each module, we have its own navigation component. Keep in mind that all of them are open to communicate, but the app navigation is the bridge when each one is going to be instantiated (and for future modules as well). When you configure them using the Main Navigation, set some delegates, publishers, subjects, or whatever mechanism you prefer to notify/propagate modules events.
+The app follows the **MVVM (Model-View-ViewModel)** architecture for simplicity, scalability, and testability.
 
-Why Main/App Navigation for now is a class and conforms to ObservableObject? In case an app needs to show an authentication module, here is where you can change its state and force SwiftUI to re-update the UI based on that change. You can do something like this:
+- **Navigation**: The app uses a hierarchical, stateless navigation model. At the top level, the `AppNavigation` component controls app-wide navigation. Each module has its own navigation component but relies on the app's central navigation to handle transitions. This approach makes future module additions easy and flexible.
+- **Observable Object**: The main navigation object conforms to `ObservableObject`, allowing the app's navigation state to be updated based on changes (e.g., login/logout).
 
-```swift
-@ViewBuilder makeRootScreen() -> some View {
-    if (!authModule.isSessionValid) {
-        authNavigation.start() -> takes user to login
-    } else {
-        homeNavigation.start() -> takes user to your home module.
-    }
-}
-```
+   Example of dynamic root screen based on authentication status:
 
-The app navigation is attached to this event authModule.isSessionValid, and when it changes, your app does as well. Also, another important aspect is to support iOS 15 versions. I could use Navigation Stack with its Path property to simplify the implementation, but this will limit the support, and keep in mind that many apps can't afford to move forward quickly.
+   ```swift
+   @ViewBuilder
+   func makeRootScreen() -> some View {
+       if (!authModule.isSessionValid) {
+           authNavigation.start() // Navigate to login
+       } else {
+           homeNavigation.start() // Navigate to home
+       }
+   }
+   ```
 
-## Next Things
+## Next Steps
 
-### Test
+While the core features are in place, several enhancements and new features are planned:
 
-Increase the code coverage. For now, the Remote Data Repository is the only class covered 100% (Using URLProtocol). This is the most critical part because it relies on direct integration with the API (Library wrapper). Other components like ViewModels are easy to test because they rely on contracts (protocols or interfaces), and these contracts can be injected to mock the behavior of the ViewModels.
+### 1. **Testing**
+   - **Increase code coverage**: Currently, the Remote Data Repository is the only fully tested class (using URLProtocol to mock network calls). Testing ViewModels and other components will follow as they rely on injected contracts (protocols or interfaces).
+   - Aim to cover more aspects of the app, especially complex logic.
 
-### Query Mechanism
+### 2. **Query Mechanism**
+   - **Improved data filtering**: The app requires more flexible filtering options. Implementing a query mechanism (such as Core Data or another query library) will make it easier to scale the app and add new filter criteria in the future.
+   - **Core Data Integration**: A Core Data template is included, but other query libraries can also be used.
 
-Data requires to be filtered with different criteria. So, in order to make the app scalable, using a query library can be more flexible in case new criteria would arise in the future. I added a Core Data template, but this is open to using other libraries.
+### 3. **New Modules**
+   - The app is still in development, and additional modules are planned for future releases, including features like Pokémon abilities, types, and stats.
 
-### New Modules
+## Installation
 
-App modules are still under development, so in the future, I expect to implement more.
-```
+To install and run this project locally, follow these steps:
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/cerezo074/pokemon-api.git
+   ```
+2. Open the project in Xcode:
+   ```bash
+   open iOS-Pokedex.xcodeproj
+   ```
+3. Build and run the project using the simulator or a connected device.
+
+## Contributing
+
+Feel free to contribute to the project! Here's how you can get involved:
+- **Open an Issue**: If you spot a bug or have a feature request, open an issue.
+- **Submit a Pull Request**: If you'd like to contribute a new feature or fix a bug, fork the repository and submit a pull request.
+
+### Code of Conduct
+
+This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to abide by its terms.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
