@@ -25,6 +25,9 @@ class PokemonCatalogViewModel: ObservableObject {
     @Published
     var areFilterActives: Bool
     
+    @Published
+    var isUserSessionActive: Bool
+    
     typealias ID = UUID
     let id: UUID = UUID()
     
@@ -40,13 +43,17 @@ class PokemonCatalogViewModel: ObservableObject {
     private let repository: PokemonRepository
     private let seachTextUpdateTime: Double = 3
     
-    init(repository: PokemonRepository) {
+    init(
+        repository: PokemonRepository,
+        userSessionManager: UserSessionServices
+    ) {
         self.pokemonViewModelList = []
         self.repository = repository
         searchText = ""
         isSearchingPokemons = false
         isLoadingDataAtFirstTime = true
         areFilterActives = false
+        isUserSessionActive = userSessionManager.isSignedIn
         
         $searchText
             .removeDuplicates()
@@ -56,6 +63,10 @@ class PokemonCatalogViewModel: ObservableObject {
             .throttle(for: .seconds(seachTextUpdateTime), scheduler: DispatchQueue.global(), latest: true)
             .sink { [weak self] word in
                 self?.filterPokemons(by: word.lowercased())
+        }.store(in: &cancellables)
+        
+        userSessionManager.isSignedInPublisher.sink { [weak self] isSessionActive in
+            self?.isUserSessionActive = isSessionActive
         }.store(in: &cancellables)
     }
     

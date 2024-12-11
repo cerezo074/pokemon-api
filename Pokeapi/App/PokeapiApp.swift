@@ -9,7 +9,23 @@ import SwiftUI
 
 @main
 struct PokeapiApp: App {
-    @StateObject var appNavigation = AppNavigator()
+    @StateObject private var appNavigation: AppNavigator
+    
+    init() {
+        _appNavigation = .init(
+            wrappedValue: {
+                AppNavigator(
+                    menuViewModel: MenuView_Previews.defaultMenuView,
+                    pokemonRepository: PokemonRepository(
+                        remoteRepository: PokemonRemoteRepository(),
+                        localRepository: PokemonLocalRepository()
+                    ),
+                    userSessionManager: UserSessionProvider(),
+                    userOnboardingManager: UserOnboardingProvider()
+                )
+        }()
+        )
+    }
     
     var body: some Scene {
         WindowGroup {

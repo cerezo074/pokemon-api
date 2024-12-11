@@ -17,6 +17,8 @@ enum DesingSystem {
             static let menuInActiveColor: SwiftUI.Color = .gray
             static let navigationActiveColor: SwiftUI.Color = .red
             static let navigationInActiveColor: SwiftUI.Color = .gray
+            static let userSessionActiveColor: SwiftUI.Color = .blue
+            static let userSessionInActiveColor: SwiftUI.Color = .gray
         }
         
     }
