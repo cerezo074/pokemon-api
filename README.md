@@ -50,7 +50,7 @@ The project is ongoing, and while several key features are already implemented, 
 The app follows the **MVVM (Model-View-ViewModel)** architecture for simplicity, scalability, and testability.
 
 - **Navigation**: The app uses a hierarchical, stateless navigation model. At the top level, the `AppNavigation` component controls app-wide navigation. Each module has its own navigation component but relies on the app's central navigation to handle transitions. This approach makes future module additions easy and flexible.
-- **Observable Object**: The main navigation object conforms to `ObservableObject`, allowing the app's navigation state to be updated based on changes (e.g., login/logout).
+- **Observable Object**: The main navigation object conforms to `ObservableObject`, allowing the app's navigation state to be updated based on changes (e.g., login/logout/splash/onboarding...).
 
    Example of dynamic root screen based on authentication status:
 
@@ -99,11 +99,3 @@ To install and run this project locally, follow these steps:
 Feel free to contribute to the project! Here's how you can get involved:
 - **Open an Issue**: If you spot a bug or have a feature request, open an issue.
 - **Submit a Pull Request**: If you'd like to contribute a new feature or fix a bug, fork the repository and submit a pull request.
-
-### Code of Conduct
-
-This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to abide by its terms.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
